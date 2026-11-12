@@ -337,6 +337,8 @@ textarea{resize:vertical;line-height:1.45}
 .fc-bl.warn{box-shadow:0 0 0 2px var(--warn)}
 .fc-bl.out{background:var(--bad-soft);color:var(--bad)}
 .fc-side{font-size:11px;color:var(--muted);margin-top:5px;max-width:220px;text-align:center;line-height:1.4}
+.fc-entries{display:flex;gap:40px;align-items:flex-start;min-width:max-content}
+.fc-extra{display:flex;flex-direction:column;gap:28px;padding-left:28px;border-left:2px dashed var(--border-strong)}
 .fc-legend{display:flex;gap:6px 14px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
 .fc-legend span{display:inline-flex;gap:6px;align-items:center}
 .fc-legend i{display:inline-block;width:14px;height:10px;border-radius:3px;border:1px solid var(--line-strong)}
@@ -1374,7 +1376,11 @@ function fcSeq(items, w){
 function wzDiagram(d, w){
   const roots = fcNest(d.tree);
   let s = '<div class="fc-legend"><span><i style="background:var(--accent);border-color:var(--accent)"></i>Webhook được chọn (bấm để tới phần chọn việc)</span><span><i style="border-style:dashed"></i>Webhook bỏ qua</span><span><i style="background:var(--accent-soft);border-color:transparent"></i>Duyệt</span><span><i style="background:var(--warn-soft);border-color:transparent"></i>Rẽ nhánh</span></div>';
-  s += '<div class="fc-wrap" role="region" aria-label="Sơ đồ lưu đồ dịch vụ ' + d.svc + '" tabindex="0">' + fcSeq(roots, w) + '</div>';
+  // tách các lối vào phụ: mỗi khối "Webhook vào" ở gốc (không phải khối đầu tiên) bắt đầu một nhóm riêng
+  const groups = [[]];
+  roots.forEach((r, i) => { if (i > 0 && r.t === 'in') groups.push([]); groups[groups.length - 1].push(r); });
+  const extra = groups.slice(1).map(g => '<div class="fc-br"><span class="fc-bl par">Lối vào phụ</span>' + FC_AR + fcSeq(g, w) + '</div>').join('');
+  s += '<div class="fc-wrap" role="region" aria-label="Sơ đồ lưu đồ dịch vụ ' + d.svc + '" tabindex="0"><div class="fc-entries">' + fcSeq(groups[0], w) + (extra ? '<div class="fc-extra">' + extra + '</div>' : '') + '</div></div>';
   return s;
 }
 function wzTreeHTML(d){
