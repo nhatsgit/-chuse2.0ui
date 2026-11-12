@@ -3,6 +3,11 @@
 Một trang `index.html` duy nhất, chạy bằng **dữ liệu cứng** để thử cách dùng trước khi nối backend
 ([base-backend](../base-backend)). Không gọi API nào, không gửi gì lên Base.
 
+Giao diện theo bộ **CRCK UI kit** ("Thẻ nhóm CRCK" của CRCK ERP): thanh trên trắng có vạch vàng, logo VRG, menu trái
+244px (thành ngăn trượt khi màn hình ≤ 900px), đầu trang có ô biểu tượng xanh, dải số liệu bấm được, tab gạch chân xanh,
+nhóm nút lọc, bảng tự thành danh sách thẻ trên điện thoại, màu thương hiệu xanh lá `#2f7a3d`, font Inter, có giao diện tối.
+CSS của kit được gộp thẳng vào `index.html` (trang chạy một file); màu chỉ dùng biến CSS.
+
 ## Có gì
 
 - **Quy trình**: danh sách, bật/tắt, cấu hình từng bước (Block ID, tên/nội dung phiếu, trường, file, AI, Office, liên thông, cho phiếu khác đi tiếp), chạy thử, lưu đồ, hướng dẫn chuyển địa chỉ webhook.

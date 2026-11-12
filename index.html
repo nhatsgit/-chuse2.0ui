@@ -4,49 +4,60 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 /* Concept: công cụ cấu hình quy trình. Thanh bên gọn, vùng làm việc hai cột (các bước | việc của bước).
    Mỗi bước trả lời "bước này làm gì?" bằng công tắc; chỉ việc được bật mới mở phần cài đặt.
    Nhấn một sắc xanh lam đậm; xanh/hổ phách/đỏ chỉ dành cho trạng thái. */
+/* Bộ giao diện CRCK ("Thẻ nhóm CRCK" của CRCK ERP): xanh lá thương hiệu, vạch vàng dưới thanh trên, nền xám xanh nhạt.
+   Biến CRCK (--brand, --mau-card, cặp màu trạng thái ...) ở đây; các biến cũ của trang (--accent, --surface ...) ánh xạ sang. */
 :root{
-  --bg:#eef2f2; --surface:#fafcfc; --surface-2:#e6ecec; --line:#d3dcdd; --line-strong:#b3c1c4;
-  --fg:#14222a; --muted:#566a70;
-  --accent:#0b5d73; --accent-strong:#084b5d; --accent-soft:#d8ebf0; --on-accent:#ffffff;
-  --ok:#2b7a3d; --ok-soft:#dcefe0; --warn:#9a5700; --warn-soft:#f6e6c8; --bad:#b3261e; --bad-soft:#f7dcd9;
-  --scrim:rgba(5,15,18,.45);
-  --shadow:0 1px 2px rgba(10,30,36,.06),0 10px 28px rgba(10,30,36,.08);
-  --font:'Be Vietnam Pro',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
-  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --brand:#2f7a3d; --brand-600:#286d35; --brand-700:#1f5a2b; --brand-50:#f2f8f3; --brand-100:#e2f0e5; --brand-200:#c5e0cc;
+  --gold:#cda852; --gold-700:#85620f; --gold-100:#f6edd3; --gold-50:#fbf7ea;
+  --mau-ink:#16221a; --ink-phu:#39473e; --muted:#56645a; --faint:#66736b;
+  --mau-line:#e1e6e2; --vach:#edf0ed; --page:#f3f5f2; --mau-card:#fff; --soft:#f7f9f7; --hover-bg:#e6ece7; --row-hover:#f5f9f6; --border-strong:#cfd8d1;
+  --ok-bg:#e2f0e5; --ok-fg:#1d6430; --warn-bg:#fcefd5; --warn-fg:#7f4d00; --bad-bg:#fbe8e5; --bad-fg:#b42318;
+  --info-bg:#e5edf3; --info-fg:#34556c; --gray-bg:#eceeec; --gray-fg:#4b574f;
+  --sh-1:0 1px 2px rgba(17,38,23,.05),0 1px 1px rgba(17,38,23,.03);
+  --sh-2:0 1px 2px rgba(17,38,23,.05),0 8px 24px -12px rgba(17,38,23,.18);
+  --scrim:rgba(16,26,20,.4);
+  --r-lg:16px; --r:12px; --r-sm:9px; --ck-rong-ben:244px;
+  --font:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  /* biến cũ của trang -> CRCK */
+  --bg:var(--page); --surface:var(--mau-card); --surface-2:var(--gray-bg); --line:var(--mau-line); --line-strong:var(--border-strong);
+  --fg:var(--mau-ink);
+  --accent:var(--brand); --accent-strong:var(--brand-700); --accent-soft:var(--brand-100); --on-accent:#fff;
+  --ok:var(--ok-fg); --ok-soft:var(--ok-bg); --warn:var(--warn-fg); --warn-soft:var(--warn-bg); --bad:var(--bad-fg); --bad-soft:var(--bad-bg);
+  --shadow:var(--sh-2);
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --bg:#0c1316; --surface:#121c20; --surface-2:#1a272c; --line:#24353b; --line-strong:#375058;
-    --fg:#e3eef0; --muted:#8ea5aa;
-    --accent:#56b9d2; --accent-strong:#8bd3e6; --accent-soft:#163540; --on-accent:#06222b;
-    --ok:#6fcf86; --ok-soft:#16311f; --warn:#e8b25a; --warn-soft:#3a2a10; --bad:#ff8a80; --bad-soft:#3d1a18;
-    --scrim:rgba(0,0,0,.6);
-    --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px rgba(0,0,0,.45);
+    --brand:#2f7a3d; --brand-600:#3a8a4b; --brand-700:#8fd39b; --brand-50:rgba(79,174,96,.10); --brand-100:rgba(79,174,96,.18); --brand-200:rgba(79,174,96,.38);
+    --gold:#cda852; --gold-700:#e0c071; --gold-100:rgba(205,168,82,.20); --gold-50:rgba(205,168,82,.10);
+    --mau-ink:#e6ece7; --ink-phu:#ccd6cf; --muted:#a9b5ad; --faint:#95a399;
+    --mau-line:#2c3830; --vach:#233027; --page:#101612; --mau-card:#171f19; --soft:#1c251f; --hover-bg:#223026; --row-hover:#1e2a22; --border-strong:#3a483f;
+    --ok-bg:rgba(79,174,96,.18); --ok-fg:#93d79f; --warn-bg:rgba(205,168,82,.18); --warn-fg:#e6c878; --bad-bg:rgba(240,96,76,.16); --bad-fg:#f4a597;
+    --info-bg:rgba(120,160,195,.18); --info-fg:#b0cbe0; --gray-bg:#26302a; --gray-fg:#c3cdc6;
+    --sh-1:0 0 0 1px rgba(0,0,0,.2); --sh-2:0 0 0 1px rgba(0,0,0,.25),0 12px 32px rgba(0,0,0,.45);
+    --scrim:rgba(0,0,0,.55);
     color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
-  --bg:#0c1316; --surface:#121c20; --surface-2:#1a272c; --line:#24353b; --line-strong:#375058;
-  --fg:#e3eef0; --muted:#8ea5aa;
-  --accent:#56b9d2; --accent-strong:#8bd3e6; --accent-soft:#163540; --on-accent:#06222b;
-  --ok:#6fcf86; --ok-soft:#16311f; --warn:#e8b25a; --warn-soft:#3a2a10; --bad:#ff8a80; --bad-soft:#3d1a18;
-  --scrim:rgba(0,0,0,.6);
-  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px rgba(0,0,0,.45);
-  color-scheme:dark;
+    --brand:#2f7a3d; --brand-600:#3a8a4b; --brand-700:#8fd39b; --brand-50:rgba(79,174,96,.10); --brand-100:rgba(79,174,96,.18); --brand-200:rgba(79,174,96,.38);
+    --gold:#cda852; --gold-700:#e0c071; --gold-100:rgba(205,168,82,.20); --gold-50:rgba(205,168,82,.10);
+    --mau-ink:#e6ece7; --ink-phu:#ccd6cf; --muted:#a9b5ad; --faint:#95a399;
+    --mau-line:#2c3830; --vach:#233027; --page:#101612; --mau-card:#171f19; --soft:#1c251f; --hover-bg:#223026; --row-hover:#1e2a22; --border-strong:#3a483f;
+    --ok-bg:rgba(79,174,96,.18); --ok-fg:#93d79f; --warn-bg:rgba(205,168,82,.18); --warn-fg:#e6c878; --bad-bg:rgba(240,96,76,.16); --bad-fg:#f4a597;
+    --info-bg:rgba(120,160,195,.18); --info-fg:#b0cbe0; --gray-bg:#26302a; --gray-fg:#c3cdc6;
+    --sh-1:0 0 0 1px rgba(0,0,0,.2); --sh-2:0 0 0 1px rgba(0,0,0,.25),0 12px 32px rgba(0,0,0,.45);
+    --scrim:rgba(0,0,0,.55);
+    color-scheme:dark;
 }
 *{box-sizing:border-box}
-body{
-  background:var(--bg); color:var(--fg); font:14px/1.5 var(--font);
-  padding-block:16px;
-  padding-left:max(16px,env(safe-area-inset-left,0px));
-  padding-right:max(16px,env(safe-area-inset-right,0px));
-  font-variant-numeric:tabular-nums;
-}
+[hidden]{display:none!important}
+body{margin:0;background:var(--page);color:var(--mau-ink);font:400 15px/1.55 var(--font);-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
 h1,h2,h3{margin:0;font-weight:600;text-wrap:balance}
 h1{font-size:22px;font-weight:700;letter-spacing:-.01em}
 h2{font-size:15px}
@@ -77,7 +88,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .crumb{color:var(--muted);font-size:13px;min-width:0}
 .btn{display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border-radius:8px;border:1px solid var(--line-strong);background:var(--surface);cursor:pointer;font-weight:500;white-space:nowrap;text-decoration:none}
 .btn:hover{background:var(--surface-2)}
-.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent-strong);color:var(--on-accent)}
 .btn.primary:hover{background:var(--accent-strong);border-color:var(--accent-strong)}
 .btn.ghost{border-color:transparent;background:transparent;color:var(--muted)}
 .btn.ghost:hover{background:var(--surface-2);color:var(--fg)}
@@ -110,7 +121,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .search:focus-within{outline:2px solid var(--accent);outline-offset:2px}
 .chips{display:flex;gap:6px;flex-wrap:wrap}
 .chip{padding:5px 11px;border-radius:99px;border:1px solid var(--line-strong);background:var(--surface);cursor:pointer;font-size:13px}
-.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent-strong);color:var(--on-accent)}
 .tblwrap{overflow-x:auto}
 .tbl{width:100%;border-collapse:collapse}
 .tbl th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;padding:9px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
@@ -134,7 +145,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .ptabs{display:flex;gap:4px;border-bottom:1px solid var(--line)}
 .ptab{padding:9px 14px;border:0;border-bottom:2px solid transparent;background:transparent;cursor:pointer;font-weight:500;color:var(--muted);margin-bottom:-1px}
 .ptab:hover{color:var(--fg)}
-.ptab[aria-selected="true"]{color:var(--accent-strong);border-bottom-color:var(--accent)}
+.ptab[aria-selected="true"]{color:var(--accent-strong);border-bottom-color:var(--accent-strong)}
 .dgrid{display:grid;grid-template-columns:270px minmax(0,1fr);gap:16px;align-items:start}
 .rail{display:flex;flex-direction:column;padding:8px}
 .rail-h{padding:8px 10px 6px;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
@@ -158,7 +169,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .caps{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
 .cap{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:10px;cursor:pointer;background:var(--surface)}
 .cap:hover{border-color:var(--line-strong)}
-.cap.on{border-color:var(--accent);background:var(--accent-soft)}
+.cap.on{border-color:var(--accent-strong);background:var(--accent-soft)}
 .cap b{display:block;font-weight:600;font-size:13px;line-height:1.3}
 .cap span.d{display:block;font-size:12px;color:var(--muted);line-height:1.35;margin-top:2px}
 .fld{display:flex;flex-direction:column;gap:5px;min-width:0}
@@ -208,11 +219,11 @@ textarea{resize:vertical;line-height:1.45}
 .picklist{max-height:260px;overflow-y:auto;padding:6px}
 .pick{display:flex;gap:10px;align-items:flex-start;padding:7px 8px;border-radius:7px;cursor:pointer}
 .pick:hover{background:var(--surface-2)}
-.pick input{margin-top:3px;accent-color:var(--accent)}
+.pick input{margin-top:3px;accent-color:var(--accent-strong)}
 .pick small{display:block;font-family:var(--mono);font-size:11px;color:var(--muted)}
 .vchips{display:flex;gap:6px;flex-wrap:wrap}
 .vchip{padding:3px 9px;border-radius:7px;border:1px solid var(--line-strong);background:var(--surface);font-size:12px;cursor:pointer}
-.vchip:hover{border-color:var(--accent);color:var(--accent-strong)}
+.vchip:hover{border-color:var(--accent-strong);color:var(--accent-strong)}
 .lt{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr) auto;gap:8px;align-items:center}
 .aicard{padding:11px 13px;border-radius:9px;background:var(--surface-2);display:flex;flex-direction:column;gap:6px;font-size:13px}
 .aicard .k{color:var(--muted);font-size:12px}
@@ -282,7 +293,7 @@ textarea{resize:vertical;line-height:1.45}
 .wzh.off{opacity:.55;background:var(--surface-2)}
 .wzh-t{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .wzh-t label{display:flex;gap:8px;align-items:center;font-weight:600;min-width:0;flex:1 1 220px;overflow-wrap:anywhere;cursor:pointer}
-.wzh-t input{accent-color:var(--accent);flex:none}
+.wzh-t input{accent-color:var(--accent-strong);flex:none}
 .wzh-m{display:flex;gap:6px 12px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--muted)}
 .wzcaps{display:flex;gap:6px;flex-wrap:wrap}
 .chip.sm{padding:3px 10px;font-size:12px}
@@ -304,7 +315,7 @@ textarea{resize:vertical;line-height:1.45}
 .fc-node{box-sizing:border-box;min-width:130px;max-width:200px;padding:7px 10px;border-radius:9px;border:1px solid var(--line-strong);background:var(--surface);color:var(--fg);font-size:12px;line-height:1.35;text-align:center;overflow-wrap:anywhere}
 .fc-node small{display:block;color:var(--muted);font-family:var(--mono);font-size:10.5px;margin-top:1px}
 .fc-node .k{display:block;font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:600}
-.fc-node.fc-hook{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:600;cursor:pointer;font:inherit;font-size:12px}
+.fc-node.fc-hook{background:var(--accent);border-color:var(--accent-strong);color:var(--on-accent);font-weight:600;cursor:pointer;font:inherit;font-size:12px}
 .fc-node.fc-hook .k,.fc-node.fc-hook small{color:inherit;opacity:.85}
 .fc-node.fc-hook.off{background:var(--surface);color:var(--muted);border-style:dashed;font-weight:500}
 .fc-node.fc-hook:focus-visible{outline:3px solid var(--accent-strong);outline-offset:2px}
@@ -335,13 +346,13 @@ textarea{resize:vertical;line-height:1.45}
 .radios{display:flex;flex-direction:column;gap:8px}
 .radio{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:10px;cursor:pointer}
 .radio:hover{border-color:var(--line-strong)}
-.radio.on{border-color:var(--accent);background:var(--accent-soft)}
-.radio input{margin-top:3px;accent-color:var(--accent)}
+.radio.on{border-color:var(--accent-strong);background:var(--accent-soft)}
+.radio input{margin-top:3px;accent-color:var(--accent-strong)}
 .radio b{display:block}
 .radio span{font-size:12px;color:var(--muted)}
 .toast{position:fixed;left:50%;bottom:0;transform:translateX(-50%);z-index:60;max-width:min(520px,calc(100vw - 32px));margin-bottom:calc(18px + env(safe-area-inset-bottom,0px));padding:10px 16px;border-radius:10px;background:var(--fg);color:var(--bg);box-shadow:var(--shadow);font-size:13px}
 .empty{padding:28px 16px;text-align:center;color:var(--muted)}
-.spin{width:14px;height:14px;border-radius:50%;border:2px solid var(--line-strong);border-top-color:var(--accent);animation:sp .8s linear infinite;display:inline-block}
+.spin{width:14px;height:14px;border-radius:50%;border:2px solid var(--line-strong);border-top-color:var(--accent-strong);animation:sp .8s linear infinite;display:inline-block}
 @keyframes sp{to{transform:rotate(360deg)}}
 @media (max-width:1100px){
   .dlist{grid-template-columns:minmax(0,1fr)}
@@ -370,6 +381,159 @@ textarea{resize:vertical;line-height:1.45}
   .alert{flex-wrap:wrap}
   .fl .ft{min-width:0}
 }
+
+/* ================= CRCK: khung ================= */
+.ck-top{position:relative;z-index:20;display:flex;align-items:center;gap:12px;min-height:58px;padding-block:8px;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));background:var(--mau-card);border-bottom:1px solid var(--mau-line);box-shadow:0 2px 0 var(--gold)}
+.ck-burger,.ck-nut-tron{flex:none;width:38px;height:38px;display:grid;place-items:center;border:0;border-radius:10px;background:none;color:var(--muted);cursor:pointer;padding:0}
+.ck-burger:hover,.ck-nut-tron:hover{background:var(--hover-bg);color:var(--mau-ink)}
+.ck-burger .ico,.ck-nut-tron .ico{width:20px;height:20px}
+.ck-hieu{display:flex;align-items:center;gap:10px;flex:none;text-decoration:none}
+.ck-hieu img{display:block;height:34px;width:auto}
+.ck-hieu b{font-size:16.5px;font-weight:700;color:var(--brand-700);letter-spacing:-.01em;white-space:nowrap}
+.ck-vet{display:flex;align-items:center;gap:8px;min-width:0;font-size:14px;color:var(--muted);overflow:hidden}
+.ck-vet span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ck-vet i{flex:none;font-style:normal;color:var(--faint)}
+.ck-vet span:last-child{color:var(--mau-ink);font-weight:500}
+.ck-top-phai{margin-left:auto;display:flex;align-items:center;gap:8px;flex:none}
+.ck-khung{display:grid;grid-template-columns:var(--ck-rong-ben) minmax(0,1fr);align-items:start}
+.ck-noi{min-width:0;padding-top:22px;padding-bottom:48px;padding-left:24px;padding-right:max(24px,env(safe-area-inset-right,0px))}
+.ck-ben{position:sticky;top:0;max-height:100dvh;overflow-y:auto;padding:18px 14px 18px max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:3px;font-size:14.5px}
+.ck-nhan{padding:10px 10px 6px;font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.ck-ph-he{display:flex;align-items:center;gap:10px;width:100%;min-height:40px;padding:7px 10px;border:0;border-radius:10px;background:none;color:var(--ink-phu);font:500 14.5px var(--font);text-align:left;cursor:pointer;text-decoration:none}
+.ck-ph-he:hover{background:var(--hover-bg)}
+.ck-ph-he .ico{flex:none;width:19px;height:19px}
+.ck-ph-he > span{flex:1;min-width:0}
+.ck-ph-he.chon,.ck-ph-he[aria-current="page"]{background:var(--mau-card);color:var(--brand-700);font-weight:600;box-shadow:var(--sh-1),inset 3px 0 0 var(--brand)}
+.ck-ben .demo{margin:14px 2px 0;border-radius:10px;font-size:12px}
+.ck-ben-duoi{margin-top:12px;padding:10px 10px 0;border-top:1px solid var(--mau-line);display:flex;align-items:center;justify-content:space-between;gap:8px;color:var(--faint);font-size:12.5px}
+.ck-ben .reset{margin:6px 0 0;align-self:flex-start}
+.ck-man{display:none;position:fixed;inset:0;z-index:60;background:var(--scrim)}
+.ck-burger{display:none}
+body.ck-mo .ck-man{display:block}
+@media (max-width:900px){
+  .ck-burger{display:grid}
+  .ck-khung{grid-template-columns:minmax(0,1fr)}
+  body.ck-mo .ck-ben{transform:none;visibility:visible}
+  .ck-ben{position:fixed;z-index:61;top:0;bottom:0;left:0;width:280px;max-height:none;background:var(--page);box-shadow:var(--sh-2);transform:translateX(-105%);visibility:hidden;transition:transform .18s,visibility .18s;padding-top:calc(18px + env(safe-area-inset-top,0px))}
+  .ck-top{gap:8px;padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px))}
+  .ck-noi{padding-top:14px;padding-bottom:40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .ck-vet{display:none}
+  .ck-hieu b{font-size:15px}
+  .ck-burger,.ck-nut-tron{width:44px;height:44px}
+  .ck-ph-he{min-height:44px}
+}
+@media (max-width:720px){
+  #draft-pill,.ck-top-phai [data-act="history"]{display:none}
+}
+@media (max-width:480px){
+  .ck-hieu b{display:none}
+}
+
+/* ================= CRCK: đầu trang, nút, dải số liệu, tab, lọc, bảng ================= */
+.ck-ph{display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px}
+.ck-ph-ico{flex:none;width:52px;height:52px;border-radius:15px;display:grid;place-items:center;color:#fff;background:linear-gradient(150deg,#3f9452 0%,#2f7a3d 48%,#1f5a2b 100%);box-shadow:0 8px 18px -8px rgba(31,90,43,.6),inset 0 1px 0 rgba(255,255,255,.22)}
+.ck-ph-ico .ico{width:26px;height:26px}
+.ck-ph-chu{flex:1 1 340px;min-width:0}
+.ck-ph h1{margin:0;font-size:25px;line-height:1.2;font-weight:700;letter-spacing:-.018em;color:var(--mau-ink)}
+.ck-ph p{margin:4px 0 0;color:var(--muted);font-size:14.5px;overflow-wrap:anywhere;max-width:72ch}
+.ck-ph-nut{display:flex;flex-wrap:wrap;gap:8px;margin-left:auto;align-items:center}
+.ck-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:38px;padding:0 15px;border-radius:10px;border:1px solid var(--mau-line);background:var(--mau-card);color:var(--mau-ink);font:600 14.5px/1.2 var(--font);white-space:nowrap;cursor:pointer;text-decoration:none;box-shadow:0 1px 1px rgba(17,38,23,.04)}
+.ck-btn:hover{border-color:var(--border-strong);background:var(--soft)}
+.ck-btn .ico{width:17px;height:17px}
+.ck-btn.chinh{background:var(--brand);border-color:var(--brand-600);color:#fff;box-shadow:0 1px 2px rgba(31,90,43,.35),inset 0 1px 0 rgba(255,255,255,.14)}
+.ck-btn.chinh:hover{background:#1f5a2b}
+.ck-dai{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));background:var(--mau-card);border:1px solid var(--mau-line);border-radius:var(--r-lg);box-shadow:var(--sh-1);overflow:hidden}
+.ck-o{display:flex;gap:12px;align-items:flex-start;min-width:0;padding:14px 18px;border:0;border-left:1px solid var(--vach);border-top:1px solid var(--vach);margin:-1px 0 0 -1px;background:none;color:inherit;font:inherit;text-align:left}
+button.ck-o{cursor:pointer}
+button.ck-o:hover{background:var(--row-hover)}
+.ck-o > i{flex:none;width:38px;height:38px;border-radius:11px;display:grid;place-items:center;background:var(--brand-100);color:var(--brand-700)}
+.ck-o > i .ico{width:19px;height:19px}
+.ck-o .nh{display:block;font-size:14px;font-weight:500;color:var(--muted)}
+.ck-o .gt{display:block;font-size:20px;font-weight:700;letter-spacing:-.012em;line-height:1.3;font-variant-numeric:tabular-nums;color:var(--mau-ink)}
+.ck-o .gt small{font-size:14px;font-weight:500;color:var(--muted);letter-spacing:0}
+.ck-o .ph{display:block;font-size:13.5px;color:var(--muted);overflow-wrap:anywhere}
+.ck-o.canh-bao > i{background:var(--warn-bg);color:var(--warn-fg)} .ck-o.canh-bao .gt{color:var(--warn-fg)}
+.ck-o.loi > i{background:var(--bad-bg);color:var(--bad-fg)} .ck-o.loi .gt{color:var(--bad-fg)}
+.ck-o.tin > i{background:var(--info-bg);color:var(--info-fg)}
+.ck-chip{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:99px;font-size:13px;font-weight:600;white-space:nowrap}
+.ck-chip.ok{background:var(--ok-bg);color:var(--ok-fg)} .ck-chip.canh-bao{background:var(--warn-bg);color:var(--warn-fg)} .ck-chip.loi{background:var(--bad-bg);color:var(--bad-fg)} .ck-chip.tin{background:var(--info-bg);color:var(--info-fg)} .ck-chip.xam{background:var(--gray-bg);color:var(--gray-fg)}
+.ck-loc{display:inline-flex;padding:3px;gap:2px;background:var(--mau-card);border:1px solid var(--mau-line);border-radius:10px;max-width:100%;overflow-x:auto;scrollbar-width:none}
+.ck-loc::-webkit-scrollbar{display:none}
+.ck-hang-loc{display:flex;flex-wrap:wrap;gap:8px 12px;justify-content:space-between;align-items:center}
+.ck-bang{overflow-x:auto;background:var(--mau-card);border:1px solid var(--mau-line);border-radius:var(--r-lg);box-shadow:var(--sh-1)}
+.ck-bang table{width:100%;border-collapse:collapse;font-size:14px}
+@media (max-width:720px){
+  .ck-ph{gap:8px 12px}
+  .ck-ph-ico{width:42px;height:42px;border-radius:12px}
+  .ck-ph-ico .ico{width:22px;height:22px}
+  .ck-ph-chu{flex:1 1 0}
+  .ck-ph h1{font-size:21px}
+  .ck-ph p{font-size:13px}
+  .ck-ph-nut{width:100%;margin-left:0}
+  .ck-ph-nut > .ck-btn{flex:1 1 auto;min-height:44px}
+  .ck-dai{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .ck-o{padding:10px 12px;gap:8px}
+  .ck-o > i{display:none}
+  .ck-o .nh{font-size:13px}
+  .ck-o .gt{font-size:19px}
+  .ck-o .ph{font-size:12px;line-height:1.35}
+  .ck-hang-loc .search{max-width:none;flex-basis:100%}
+  .ck-bang.the-dt{border:0;background:none;box-shadow:none;overflow:visible}
+  .ck-bang.the-dt table,.ck-bang.the-dt tbody,.ck-bang.the-dt tr,.ck-bang.the-dt td{display:block;width:100%}
+  .ck-bang.the-dt thead{display:none}
+  .ck-bang.the-dt tr{margin-bottom:10px;padding:10px 14px;background:var(--mau-card);border:1px solid var(--mau-line);border-radius:var(--r);box-shadow:var(--sh-1)}
+  .ck-bang.the-dt td{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:4px 0;border:0;text-align:right}
+  .ck-bang.the-dt td::before{content:attr(data-nhan);flex:none;color:var(--muted);text-align:left;font-size:13px}
+  .ck-bang.the-dt td.name{display:block;text-align:left}
+  .ck-bang.the-dt td.name::before{display:none}
+  .ck-bang.the-dt td.hide-s{display:none}
+}
+@media (max-width:360px){.ck-ph h1{font-size:19px}}
+
+/* ================= thành phần cũ theo kiểu CRCK ================= */
+.ck-noi :focus-visible,.drawer :focus-visible,.ck-ben :focus-visible{outline:3px solid var(--brand-200);outline-offset:2px}
+.btn{height:38px;padding:0 15px;justify-content:center;gap:8px;border-radius:10px;border:1px solid var(--mau-line);background:var(--mau-card);color:var(--mau-ink);font:600 14.5px/1.2 var(--font);box-shadow:0 1px 1px rgba(17,38,23,.04)}
+.btn:hover{border-color:var(--border-strong);background:var(--soft)}
+.btn.primary{background:var(--brand);border-color:var(--brand-600);color:#fff;box-shadow:0 1px 2px rgba(31,90,43,.35),inset 0 1px 0 rgba(255,255,255,.14)}
+.btn.primary:hover{background:#1f5a2b;border-color:#1f5a2b}
+.btn.ghost{border-color:transparent;background:transparent;box-shadow:none;color:var(--muted)}
+.btn.ghost:hover{background:var(--hover-bg);color:var(--mau-ink)}
+.btn.sm{height:32px;padding:0 11px;font-size:13px;border-radius:9px}
+.btn.lg{height:40px;padding:0 16px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.card{border-radius:var(--r-lg);border-color:var(--mau-line);background:var(--mau-card);box-shadow:var(--sh-1)}
+.card-h{border-bottom-color:var(--vach);padding:14px 16px}
+.card-h h2{font-size:16px;font-weight:600}
+.pill{height:24px;padding:0 10px;border-radius:99px;font-size:12.5px;font-weight:600;background:var(--gray-bg);color:var(--gray-fg)}
+.pill.ok{background:var(--ok-bg);color:var(--ok-fg)}
+.pill.warn{background:var(--warn-bg);color:var(--warn-fg)}
+.pill.bad{background:var(--bad-bg);color:var(--bad-fg)}
+.pill.acc{background:var(--info-bg);color:var(--info-fg)}
+.chip{border:1px solid var(--mau-line);background:var(--mau-card);color:var(--ink-phu);font:500 13.5px var(--font);padding:5px 12px}
+.chip:hover{background:var(--hover-bg)}
+.chip[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:600}
+.ck-loc .chip{flex:none;height:32px;padding:0 14px;border:0;border-radius:8px;background:none;color:var(--ink-phu);font:500 14px var(--font);white-space:nowrap}
+.ck-loc .chip:hover{background:var(--hover-bg)}
+.ck-loc .chip[aria-pressed="true"]{background:var(--brand);color:#fff;font-weight:600}
+.search{height:38px;border:1px solid var(--mau-line);border-radius:10px;background:var(--mau-card)}
+.search:focus-within{outline:0;border-color:var(--brand-200);box-shadow:0 0 0 3px var(--brand-100)}
+.search input[type=text],.search input[type=text]:focus{border:0;border-radius:0;box-shadow:none;background:transparent;padding:8px 0}
+input[type=text],select,textarea{border-color:var(--mau-line);border-radius:10px;background:var(--mau-card)}
+input[type=text]:focus,select:focus,textarea:focus{outline:0;border-color:var(--brand-200);box-shadow:0 0 0 3px var(--brand-100)}
+.tbl th{background:var(--soft);border-bottom:1px solid var(--mau-line);color:var(--muted);font-size:12.5px;letter-spacing:.03em;padding:10px 14px}
+.tbl td{border-bottom:1px solid var(--vach);padding:10px 14px}
+.tbl tbody tr.row:hover{background:var(--row-hover)}
+.ptabs,.tabs{display:flex;gap:2px;flex-wrap:nowrap;border-bottom:1px solid var(--mau-line);overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
+.ptabs::-webkit-scrollbar,.tabs::-webkit-scrollbar{display:none}
+.ptab,.tab{flex:none;min-height:44px;padding:0 14px;margin-bottom:-1px;border:0;border-bottom:2px solid transparent;border-radius:0;background:none;color:var(--muted);font:500 14.5px var(--font);white-space:nowrap;cursor:pointer}
+.ptab:hover,.tab:hover{color:var(--mau-ink);background:none}
+.ptab[aria-selected="true"],.tab[aria-selected="true"]{color:var(--brand-700);border-bottom-color:var(--brand);font-weight:600;background:none}
+.detail-head h1{font-size:22px;letter-spacing:-.015em}
+.detail-head .grow{flex:1 1 360px}
+.ck-vet span:first-child{flex:none}
+.detail-head .ck-ph-ico{width:46px;height:46px;border-radius:13px}
+.drawer{background:var(--mau-card)}
+.alert{padding:12px 16px;border-top-color:var(--vach)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 
@@ -384,6 +548,8 @@ textarea{resize:vertical;line-height:1.45}
     <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
     <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.2-4.2"/></symbol>
     <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6L17 7M7 17l-1.4 1.4"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" style="fill:currentColor"/></symbol>
     <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
     <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
     <symbol id="i-minus" viewBox="0 0 24 24"><path d="M6 12h12"/></symbol>
@@ -392,34 +558,30 @@ textarea{resize:vertical;line-height:1.45}
   </defs>
 </svg>
 
-<div class="app">
-  <aside class="side" aria-label="Điều hướng">
-    <div class="brand">
-      <div class="mark"><svg class="ico sm"><use href="#i-flow"/></svg></div>
-      <div><b>Base · Điều khiển</b><span>Cao su Bean Heack</span></div>
-    </div>
-    <nav class="nav" id="nav">
-      <a href="#quy-trinh" data-v="quy-trinh"><svg class="ico"><use href="#i-flow"/></svg><span class="lbl-t">Quy trình</span></a>
-      <a href="#tu-dien" data-v="tu-dien"><svg class="ico"><use href="#i-book"/></svg><span class="lbl-t">Từ điển</span></a>
-      <a href="#nhat-ky" data-v="nhat-ky"><svg class="ico"><use href="#i-log"/></svg><span class="lbl-t">Nhật ký chạy</span></a>
-    </nav>
-    <div class="side-foot">
-      <div class="demo">Bản xem thử, chưa nối với Base. Quy trình và phiếu là dữ liệu mẫu; lưu đồ, 47 trường và URL webhook của Văn thư BHVN lấy từ lần đọc thật. Thay đổi được giữ trên trình duyệt này.</div>
-      <button class="btn ghost sm" data-act="theme" type="button"><svg class="ico sm"><use href="#i-sun"/></svg>Đổi giao diện</button>
-      <button class="btn ghost sm" data-act="reset" type="button" id="reset-btn"><svg class="ico sm"><use href="#i-refresh"/></svg><span>Đặt lại dữ liệu mẫu</span></button>
-    </div>
-  </aside>
-  <div class="work">
-    <div class="topbar">
-      <div class="crumb" id="crumb">Quy trình</div>
-      <div class="draft">
-        <span class="pill" id="draft-pill">Không có thay đổi</span>
-        <button class="btn ghost sm" data-act="history" type="button">Lịch sử phiên bản</button><button class="btn primary sm" id="publish" data-act="publish" type="button" disabled>Xuất bản cấu hình</button>
-      </div>
-    </div>
-    <main id="view"></main>
+<header class="ck-top" id="ckTop">
+  <button type="button" class="ck-burger" id="ckBurger" aria-label="Mở menu" title="Mở menu"><svg class="ico"><use href="#i-menu"/></svg></button>
+  <a class="ck-hieu" href="#quy-trinh"><img src="data:image/png;base64,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" alt="VRG" width="90" height="34"><b>Base · Điều khiển</b></a>
+  <nav class="ck-vet" aria-label="Đường dẫn"><span>Cao su Bean Heack</span><i aria-hidden="true">›</i><span id="crumb">Quy trình</span></nav>
+  <div class="ck-top-phai">
+    <span class="pill" id="draft-pill">Không có thay đổi</span>
+    <button class="btn ghost sm" data-act="history" type="button">Lịch sử phiên bản</button><button class="btn primary sm" id="publish" data-act="publish" type="button" disabled>Xuất bản cấu hình</button>
   </div>
+</header>
+<div class="ck-khung">
+  <aside class="ck-ben" id="ckBen" aria-label="Điều hướng">
+    <div class="ck-nhan">Phân hệ</div>
+    <nav id="nav" style="display:flex;flex-direction:column;gap:3px">
+      <a class="ck-ph-he" href="#quy-trinh" data-v="quy-trinh"><svg class="ico"><use href="#i-flow"/></svg><span>Quy trình</span></a>
+      <a class="ck-ph-he" href="#tu-dien" data-v="tu-dien"><svg class="ico"><use href="#i-book"/></svg><span>Từ điển</span></a>
+      <a class="ck-ph-he" href="#nhat-ky" data-v="nhat-ky"><svg class="ico"><use href="#i-log"/></svg><span>Nhật ký chạy</span></a>
+    </nav>
+    <div class="demo">Bản xem thử, chưa nối với Base. Quy trình và phiếu là dữ liệu mẫu; lưu đồ của 5 dịch vụ lấy từ lần đọc thật. Thay đổi được giữ trên trình duyệt này.</div>
+    <div class="ck-ben-duoi"><span>Cao su Bean Heack</span><button class="ck-nut-tron" data-act="theme" type="button" title="Đổi giao diện sáng, tối" aria-label="Đổi giao diện sáng, tối"><svg class="ico"><use href="#i-moon"/></svg></button></div>
+    <button class="btn ghost sm reset" data-act="reset" type="button" id="reset-btn"><svg class="ico sm"><use href="#i-refresh"/></svg><span>Đặt lại dữ liệu mẫu</span></button>
+  </aside>
+  <div class="ck-noi"><main id="view"></main></div>
 </div>
+<div class="ck-man" id="ckMan"></div>
 <div id="drawer" class="drawer-bg" hidden><aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="dr-title" id="drawer-panel"></aside></div>
 <div id="toast" class="toast" role="status" hidden></div>
 
@@ -859,15 +1021,30 @@ function procRows(){
     else if (u) st = '<span class="pill warn"><span class="dot"></span>' + u + ' bước chưa cấu hình</span>';
     else if (p.err) st = '<span class="pill bad"><span class="dot"></span>Có lỗi gần đây</span>';
     else st = '<span class="pill ok"><span class="dot"></span>Đang chạy</span>';
-    return '<tr class="row" data-act="open" data-pid="' + p.id + '"><td class="name"><b>' + esc(p.name) + '</b><div class="small muted">' + esc(p.g) + ' · ' + p.steps.length + ' bước</div></td>' +
-      '<td class="hide-s"><span class="pill acc">' + TYPES[p.e][0] + '</span></td>' +
-      '<td>' + st + '</td>' +
-      '<td class="hide-s mono muted">' + p.svc + '</td>' +
-      '<td><label class="sw" title="Bật hoặc tắt xử lý"><input type="checkbox" id="on-' + p.id + '" data-act="toggle" data-pid="' + p.id + '"' + (p.on ? ' checked' : '') + ' aria-label="Bật ' + esc(p.name) + '"><span></span></label></td></tr>';
+    return '<tr class="row" data-act="open" data-pid="' + p.id + '"><td class="name" data-nhan="Quy trình"><b>' + esc(p.name) + '</b><div class="small muted">' + esc(p.g) + ' · ' + p.steps.length + ' bước</div></td>' +
+      '<td class="hide-s" data-nhan="Loại xử lý"><span class="pill acc">' + TYPES[p.e][0] + '</span></td>' +
+      '<td data-nhan="Tình trạng">' + st + '</td>' +
+      '<td class="hide-s mono muted" data-nhan="Mã dịch vụ">' + p.svc + '</td>' +
+      '<td data-nhan="Bật"><label class="sw" title="Bật hoặc tắt xử lý"><input type="checkbox" id="on-' + p.id + '" data-act="toggle" data-pid="' + p.id + '"' + (p.on ? ' checked' : '') + ' aria-label="Bật ' + esc(p.name) + '"><span></span></label></td></tr>';
   }).join('');
 }
+/* dải số liệu CRCK: mỗi ô là một lối tắt tới việc cần làm */
+function kpiHTML(){
+  const on = P.filter(p => p.on).length;
+  const unsetN = P.reduce((n, p) => n + unset(p), 0), unsetP = P.find(p => unset(p));
+  const oldN = P.reduce((n, p) => n + p.steps.filter(s => !s.start && s.ep !== 'new').length, 0);
+  const errN = LOGS.filter(l => l.s === 'err').length;
+  const o = (tag, cls, ic, nh, gt, unit, ph, k) => '<' + tag + ' class="ck-o ' + cls + '"' + (tag === 'button' ? ' type="button" data-act="kpi" data-k="' + k + '"' : '') + '><i aria-hidden="true">' + icon(ic) + '</i><span><span class="nh">' + nh + '</span><span class="gt">' + gt + ' <small>' + unit + '</small></span><span class="ph">' + esc(ph) + '</span></span></' + tag + '>';
+  return '<div class="ck-dai">' +
+    o('div', '', 'flow', 'Đang bật', on + '/' + P.length, 'quy trình', P.length - on ? (P.length - on) + ' quy trình đang tắt' : 'tất cả đang chạy', '') +
+    o(unsetN ? 'button' : 'div', unsetN ? 'canh-bao' : '', 'alert', 'Bước chưa cấu hình', unsetN, 'bước', unsetP ? 'bấm để mở ' + unsetP.name : 'đã cấu hình đủ', 'unset') +
+    o(oldN ? 'button' : 'div', oldN ? 'canh-bao' : '', 'link', 'Còn gửi về Apps Script', oldN, 'khối', oldN ? 'đổi địa chỉ webhook trên Base' : 'đã chuyển hết', 'old') +
+    o(errN ? 'button' : 'div', errN ? 'loi' : '', 'log', 'Lần chạy lỗi', errN, 'lần', errN ? 'bấm để xem nhật ký lỗi' : 'không có lỗi', 'err') +
+  '</div>';
+}
 function viewProcs(){
-  let h = '<div class="pagehead"><div><h1>Quy trình</h1><p>Mỗi quy trình gắn với một dịch vụ trên Base Service. Bấm vào một dòng để chọn việc hệ thống làm ở từng bước.</p></div><button class="btn primary lg" data-act="wizard" type="button">' + icon('link') + 'Thêm quy trình từ Base</button></div>';
+  let h = '<div class="ck-ph"><div class="ck-ph-ico" aria-hidden="true">' + icon('flow') + '</div><div class="ck-ph-chu"><h1>Quy trình</h1><p>Mỗi quy trình gắn với một dịch vụ trên Base Service. Bấm vào một dòng để chọn việc hệ thống làm ở từng bước.</p></div><div class="ck-ph-nut"><button class="ck-btn chinh" data-act="wizard" type="button">' + icon('link') + 'Thêm quy trình từ Base</button></div></div>';
+  h += kpiHTML();
   if (state.issues.length){
     h += '<section class="card"><div class="card-h"><h2>Cần sửa</h2><span class="small muted">Những chỗ cấu hình sẽ làm phiếu bị dừng</span></div><div class="alerts">';
     state.issues.forEach(it => {
@@ -875,10 +1052,10 @@ function viewProcs(){
     });
     h += '</div></section>';
   }
-  h += '<div class="tools"><label class="search">' + icon('search') + '<input type="text" id="q" placeholder="Tìm theo tên, nhóm hoặc mã dịch vụ" value="' + esc(state.q) + '" aria-label="Tìm quy trình"></label><div class="chips">';
+  h += '<div class="ck-hang-loc"><label class="search">' + icon('search') + '<input type="text" id="q" placeholder="Tìm theo tên, nhóm hoặc mã dịch vụ" value="' + esc(state.q) + '" aria-label="Tìm quy trình"></label><div class="ck-loc" role="group" aria-label="Lọc theo nhóm">';
   ['Tất cả'].concat(GROUPS).forEach(g => { h += '<button class="chip" type="button" data-act="grp" data-v="' + esc(g) + '" aria-pressed="' + (state.grp === g) + '">' + esc(g) + '</button>'; });
   h += '</div></div>';
-  h += '<section class="card"><div class="tblwrap"><table class="tbl"><thead><tr><th>Quy trình</th><th class="hide-s">Loại xử lý</th><th>Tình trạng</th><th class="hide-s">Mã dịch vụ</th><th>Bật</th></tr></thead><tbody id="ptbody">' + procRows() + '</tbody></table></div></section>';
+  h += '<div class="ck-bang the-dt"><table class="tbl"><thead><tr><th>Quy trình</th><th class="hide-s">Loại xử lý</th><th>Tình trạng</th><th class="hide-s">Mã dịch vụ</th><th>Bật</th></tr></thead><tbody id="ptbody">' + procRows() + '</tbody></table></div>';
   return h;
 }
 
@@ -1008,7 +1185,7 @@ function viewDetail(p){
   if (state.si >= p.steps.length) state.si = 0;
   const st = p.steps[state.si], u = unset(p);
   let h = '<div class="detail-head"><button class="btn ghost sm" data-act="back" type="button">' + icon('back') + 'Tất cả quy trình</button></div>';
-  h += '<div class="detail-head"><div class="grow"><h1>' + esc(p.name) + '</h1><div class="meta"><span class="pill">Dịch vụ <span class="mono">' + p.svc + '</span></span><span class="pill">Lưu vào bảng: ' + esc(p.store) + '</span>' + (u ? '<span class="pill warn"><span class="dot"></span>' + u + ' bước chưa cấu hình</span>' : '<span class="pill ok"><span class="dot"></span>Đã cấu hình đủ</span>') + '</div></div>';
+  h += '<div class="detail-head"><div class="ck-ph-ico" aria-hidden="true">' + icon('flow') + '</div><div class="grow"><h1>' + esc(p.name) + '</h1><div class="meta"><span class="pill">Dịch vụ <span class="mono">' + p.svc + '</span></span><span class="pill">Lưu vào bảng: ' + esc(p.store) + '</span>' + (u ? '<span class="pill warn"><span class="dot"></span>' + u + ' bước chưa cấu hình</span>' : '<span class="pill ok"><span class="dot"></span>Đã cấu hình đủ</span>') + '</div></div>';
   h += '<div class="inline"><label class="small muted" for="f-engine">Loại xử lý</label><select id="f-engine" data-pbind="e" style="width:auto">' + Object.keys(TYPES).map(k => '<option value="' + k + '"' + (k === p.e ? ' selected' : '') + '>' + TYPES[k][0] + '</option>').join('') + '</select>';
   h += '<label class="inline small" for="f-on"><span class="sw"><input type="checkbox" id="f-on" data-pbind="on"' + (p.on ? ' checked' : '') + '><span></span></span>' + (p.on ? 'Đang bật' : 'Đang tắt') + '</label><button class="btn sm" type="button" data-act="dupproc">Nhân bản</button><button class="btn ghost sm" type="button" data-act="askdelproc">Xoá</button></div></div>';
   if (state.confirm === 'proc:' + p.id) h += confirmBox('Xoá quy trình "' + esc(p.name) + '" và toàn bộ ' + p.steps.length + ' bước cấu hình? Dịch vụ trên Base không bị ảnh hưởng.', 'delproc', 'Xoá quy trình');
@@ -1047,7 +1224,7 @@ function dictEditor(t, it){
 function viewDict(){
   const t = dictTab(), items = DICT[t.k];
   if (state.dsel >= items.length) state.dsel = 0;
-  let h = '<div class="pagehead"><div><h1>Từ điển</h1><p>Giá trị dùng chung cho nhiều bước. Ở bước chỉ cần chọn tên gọi; sửa một lần ở đây là mọi nơi đổi theo.</p></div></div>';
+  let h = '<div class="ck-ph"><div class="ck-ph-ico" aria-hidden="true">' + icon('book') + '</div><div class="ck-ph-chu"><h1>Từ điển</h1><p>Giá trị dùng chung cho nhiều bước. Ở bước chỉ cần chọn tên gọi; sửa một lần ở đây là mọi nơi đổi theo.</p></div></div>';
   h += '<div class="tabs" role="tablist">' + DTABS.map(x => '<button class="tab" role="tab" type="button" data-act="dtab" data-v="' + x.k + '" aria-selected="' + (x.k === t.k) + '">' + esc(x.label) + '</button>').join('') + '</div>';
   h += '<p class="small muted">' + esc(t.help) + '</p>';
   h += '<div class="dlist"><section class="card"><div class="card-h"><h2>' + esc(t.label) + '</h2><button class="btn sm" type="button" data-act="dadd">' + icon('plus') + 'Thêm mục</button></div><div class="tblwrap"><table class="tbl"><thead><tr><th>Tên gọi</th><th class="hide-s">' + esc(t.val) + '</th><th class="num">Bước dùng</th></tr></thead><tbody>';
@@ -1063,8 +1240,8 @@ function viewDict(){
 function viewLogs(){
   const F = ['Tất cả', 'Lỗi', 'Cảnh báo', 'Thành công'], map = {'Lỗi':'err', 'Cảnh báo':'warn', 'Thành công':'ok'};
   const list = LOGS.filter(l => state.lf === 'Tất cả' || l.s === map[state.lf]);
-  let h = '<div class="pagehead"><div><h1>Nhật ký chạy</h1><p>Mỗi tín hiệu Base gửi về được ghi lại từng bước. Bấm một dòng để xem hệ thống đã làm gì và dừng ở đâu.</p></div></div>';
-  h += '<div class="chips">' + F.map(f => '<button class="chip" type="button" data-act="lf" data-v="' + f + '" aria-pressed="' + (state.lf === f) + '">' + f + '</button>').join('') + '</div>';
+  let h = '<div class="ck-ph"><div class="ck-ph-ico" aria-hidden="true">' + icon('log') + '</div><div class="ck-ph-chu"><h1>Nhật ký chạy</h1><p>Mỗi tín hiệu Base gửi về được ghi lại từng bước. Bấm một dòng để xem hệ thống đã làm gì và dừng ở đâu.</p></div></div>';
+  h += '<div class="ck-hang-loc"><div class="ck-loc" role="group" aria-label="Lọc theo kết quả">' + F.map(f => '<button class="chip" type="button" data-act="lf" data-v="' + f + '" aria-pressed="' + (state.lf === f) + '">' + f + '</button>').join('') + '</div></div>';
   h += '<section class="card"><div>';
   if (!list.length) h += '<div class="empty">Không có lượt chạy nào ở mục này.</div>';
   list.forEach(l => {
@@ -1397,6 +1574,13 @@ document.addEventListener('click', e => {
       DICT[t.k].splice(state.dsel, 1); state.dsel = 0; markDirty('dict:' + t.k + ':del:' + it.k); render(); toast('Đã xoá "' + it.k + '" trong bản nháp'); break;
     }
     case 'lf': state.lf = a.dataset.v; render(); break;
+    case 'kpi': {
+      const k = a.dataset.k;
+      if (k === 'err'){ state.lf = 'Lỗi'; go('nhat-ky'); break; }
+      if (k === 'unset'){ const pp = P.find(x => unset(x)); if (pp){ state.pid = pp.id; state.si = Math.max(0, pp.steps.findIndex(s => !isSet(s))); state.ptab = 'cfg'; go('quy-trinh'); } break; }
+      if (k === 'old'){ const pp = P.find(x => x.steps.some(s => !s.start && s.ep !== 'new')); if (pp){ state.pid = pp.id; state.ptab = 'flow'; go('quy-trinh'); } break; }
+      break;
+    }
     case 'log': showLog(+a.dataset.i); break;
     case 'close': closeDrawer(); break;
     case 'dismiss': state.issues = state.issues.filter(x => String(x.id) !== a.dataset.id); render(); break;
@@ -1575,5 +1759,16 @@ window.addEventListener('hashchange', route);
 route();
 updateDraft();
 if (restored && state.dirty.size) toast('Đã mở lại ' + state.dirty.size + ' thay đổi chưa xuất bản trên trình duyệt này');
+})();
+</script>
+<script>
+/* Khung CRCK: nút ba gạch mở menu trái dạng ngăn trượt (≤ 900px), bấm nền tối / Esc / chọn mục để đóng */
+(function(){
+  var b = document.getElementById('ckBurger'), m = document.getElementById('ckMan'), ben = document.getElementById('ckBen');
+  function dong(){ document.body.classList.remove('ck-mo'); }
+  if (b) b.addEventListener('click', function(){ document.body.classList.toggle('ck-mo'); });
+  if (m) m.addEventListener('click', dong);
+  if (ben) ben.addEventListener('click', function(e){ if (e.target.closest('a,[data-act="reset"],[data-act="theme"]')) dong(); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') dong(); });
 })();
 </script>
