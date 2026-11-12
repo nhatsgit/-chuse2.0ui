@@ -29,7 +29,7 @@ later(50, () => {
   T('bat Office + chon don vi', () => { change(q('#cap-office'), true); change(q('#f-office'), 'BHCK'); if (!/publisher-47/.test(q('#sec-office').innerHTML)) throw new Error('khong hien ma don vi'); });
   T('bat cho phieu khac di tiep', () => { change(q('#cap-exec'), true); if (!q('#f-exfield')) throw new Error('khong co o'); change(q('#f-exfield'), 'service_so_phieu'); });
   T('chay thu buoc', () => { click('[data-act="dry"]'); if (q('#drawer').hidden) throw new Error('khong mo'); if (d.querySelectorAll('.trace li').length < 5) throw new Error('it buoc'); click('[data-act="close"]'); });
-  T('tab luu do', () => { click('[data-act="ptab"][data-v="flow"]'); if (!q('.flow .fl')) throw new Error('trong'); click('[data-act="ptab"][data-v="cfg"]'); });
+  T('tab luu do', () => { click('[data-act="ptab"][data-v="flow"]'); if (!q('#fcd .fc-node')) throw new Error('trong'); click('[data-act="fview"][data-v="ds"]'); if (!q('.flow .fl')) throw new Error('danh sach trong'); click('[data-act="fview"][data-v="sd"]'); click('[data-act="ptab"][data-v="cfg"]'); });
   T('them buoc', () => { const n = d.querySelectorAll('#rail .step').length; click('[data-act="addstep"]'); if (d.querySelectorAll('#rail .step').length !== n + 1) throw new Error('khong them'); });
   T('lien thong o BC thong minh', () => { click('[data-act="back"]'); click('tr[data-pid="bc-tm-crck2"]'); click('[data-act="step"][data-i="1"]'); if (!q('#sec-lt')) throw new Error('khong co muc'); click('[data-act="addlt"]'); });
   T('can sua -> mo dung buoc', () => { click('[data-act="back"]'); click('.alert [data-act="open"]'); if (!/Văn thư đi_BHCK/.test(q('#crumb').textContent)) throw new Error(q('#crumb').textContent); if (!/Cấp số/.test(q('#editor h2').textContent)) throw new Error(q('#editor h2').textContent); });
@@ -40,7 +40,7 @@ later(3000, () => {
   T('buoc 2 hien 10 khoi webhook', () => { const n = d.querySelectorAll('.wzh').length; if (n !== 10) throw new Error('ra ' + n); click('[data-act="wznext"]'); });
   T('tao quy trinh tu Base', () => { click('[data-act="wzcreate"]'); if (!/Văn thư BHVN/.test(q('#crumb').textContent)) throw new Error(q('#crumb').textContent); const n = q('#rail .rail-h').textContent; if (n !== '10 bước') throw new Error('rail ' + n); });
   T('buoc chep co nhan Can kiem', () => { if (!/Cần kiểm/.test(q('#rail').textContent)) throw new Error('khong co nhan'); click('[data-act="reviewed"]'); });
-  T('luu do BHVN co 10 webhook', () => { click('[data-act="ptab"][data-v="flow"]'); const n = d.querySelectorAll('#view .fl.hook').length; if (n !== 10) throw new Error('ra ' + n); click(q('.fl.hook [data-act="flowgo"]')); if (!q('#editor')) throw new Error('khong ve cau hinh'); });
+  T('luu do BHVN co 10 webhook', () => { click('[data-act="ptab"][data-v="flow"]'); const n = d.querySelectorAll('#fcd .fc-hook').length; if (n !== 10) throw new Error('ra ' + n); click(q('#fcd .fc-hook')); if (!q('#fpanel #editor')) throw new Error('khong ve cau hinh'); });
   w.location.hash = 'tu-dien';
 });
 later(3600, () => {

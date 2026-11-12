@@ -57,7 +57,27 @@ setTimeout(() => {
     if (!q('#cap-ai').checked || !q('#cap-file').checked || !q('#cap-truong').checked) throw new Error('caps');
     if (qa('#fchips .fchip').length !== 7) throw new Error('truong ' + qa('#fchips .fchip').length);
   });
-  T('doi chieu Base: 1 khoi chua cau hinh', () => { click('[data-act="ptab"][data-v="flow"]'); click('[data-act="reread"]'); if (!/1 khối webhook chưa cấu hình \(1\. Webhook hình thức xuất nhập\)/.test(d.body.textContent)) throw new Error('toast'); });
+  T('so do: bam webhook da cau hinh -> mo cau hinh ben phai, doi viec -> o so do cap nhat', () => {
+    click('[data-act="ptab"][data-v="flow"]');
+    if (qa('#fcd .fc-hook').length !== 45) throw new Error('so o ' + qa('#fcd .fc-hook').length);
+    click('#fcd .fc-hook[data-id="51153"]');
+    if (!q('#fpanel #editor') || !/51153/.test(q('#fpanel #editor').textContent)) throw new Error('khong mo cau hinh');
+    if (!q('#fcd .fc-hook[data-id="51153"]').classList.contains('cur')) throw new Error('khong danh dau dang chon');
+    change(q('#fpanel #cap-ai'), true);
+    if (!/AI/.test(q('#fcd .fc-hook[data-id="51153"] .fc-tags').textContent)) throw new Error('o so do khong cap nhat');
+  });
+  T('so do: bam webhook chua cau hinh -> them vao cau hinh', () => {
+    click('#fcd .fc-hook[data-id="51149"]');
+    if (!/chưa có trong cấu hình/.test(q('#fpanel').textContent)) throw new Error('khong bao chua cau hinh');
+    if (!/1\. Hình thức xuất nhập/.test(q('#fpanel').textContent)) throw new Error('khong hien khoi truoc');
+    click('#fpanel [data-act="flowadd"]');
+    if (!q('#fpanel #editor') || q('#fcd .fc-hook[data-id="51149"]').classList.contains('off')) throw new Error('chua them');
+  });
+  T('so do: bam khoi duyet -> hien thong tin', () => {
+    click('#fcd .fc-appr');
+    if (!/Khối duyệt trên Base/.test(q('#fpanel').textContent)) throw new Error('khong hien thong tin');
+  });
+  T('doi chieu Base: 1 khoi chua cau hinh', () => { click('[data-act="ptab"][data-v="flow"]'); click('[data-act="reread"]'); if (!/khớp, không có khối mới/.test(d.body.textContent)) throw new Error('toast'); });
   T('van thu BHVN: chep cau hinh BHCK', () => {
     click('[data-act="back"]'); click('[data-act="wizard"]'); click('[data-act="wztry"][data-v="50316"]');
   });

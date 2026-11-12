@@ -337,6 +337,20 @@ textarea{resize:vertical;line-height:1.45}
 .fc-bl.warn{box-shadow:0 0 0 2px var(--warn)}
 .fc-bl.out{background:var(--bad-soft);color:var(--bad)}
 .fc-side{font-size:11px;color:var(--muted);margin-top:5px;max-width:220px;text-align:center;line-height:1.4}
+.flowcfg{display:grid;grid-template-columns:minmax(0,1fr) minmax(360px,440px);gap:16px;align-items:start}
+.flowcfg > .card{min-width:0}
+#fpanel{position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto}
+#fcd{max-height:calc(100vh - 220px);min-height:420px}
+.fc-node.fc-click{cursor:pointer;font:inherit;font-size:12px}
+.fc-node.fc-click:hover{border-color:var(--brand-200);box-shadow:0 0 0 3px var(--brand-50)}
+.fc-node.cur{outline:3px solid var(--gold);outline-offset:2px}
+.fc-hook .ep{display:block;font-size:10.5px;font-weight:500;opacity:.85;margin-top:2px}
+.fc-hook.off .ep{color:var(--warn-fg);opacity:1}
+.finfo{display:flex;flex-direction:column;gap:12px;padding:16px}
+.finfo .k{font-size:11px;letter-spacing:.05em;text-transform:uppercase;font-weight:600;color:var(--muted)}
+.finfo h2{font-size:18px}
+.fviews{margin-left:auto}
+@media (max-width:1100px){.flowcfg{grid-template-columns:minmax(0,1fr)} #fpanel{position:static;max-height:none} #fcd{max-height:70vh;min-height:0}}
 .fc-entries{display:flex;gap:40px;align-items:flex-start;min-width:max-content}
 .fc-extra{display:flex;flex-direction:column;gap:28px;padding-left:28px;border-left:2px dashed var(--border-strong)}
 .fc-legend{display:flex;gap:6px 14px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
@@ -1165,6 +1179,62 @@ function railHTML(p){
   });
   return h + '<button class="step" type="button" data-act="addstep"><span class="n">' + icon('plus') + '</span><span><b>Thêm bước</b><small>Gắn Block ID mới</small></span></button>';
 }
+/* ---- tab Lưu đồ: sơ đồ + cấu hình khối được bấm ---- */
+function fcDetailState(p){
+  const steps = {}; p.steps.forEach(s => { steps[s.block] = s; });
+  const st = p.steps[state.si];
+  return {detail:true, steps, cur: state.fsel ? String(state.fsel) : (st ? String(st.block) : '')};
+}
+function fcDetailInner(p){
+  const w = fcDetailState(p), roots = fcNest(flowOf(p));
+  const groups = [[]];
+  roots.forEach((r, i) => { if (i > 0 && r.t === 'in') groups.push([]); groups[groups.length - 1].push(r); });
+  const extra = groups.slice(1).map(g => '<div class="fc-br"><span class="fc-bl par">Lối vào phụ</span>' + FC_AR + fcSeq(g, w) + '</div>').join('');
+  return '<div class="fc-entries">' + fcSeq(groups[0], w) + (extra ? '<div class="fc-extra">' + extra + '</div>' : '') + '</div>';
+}
+const FC_INFO = {
+  step:'Bước nhập liệu trên Base. Hệ thống không chạy ở khối này; những gì người dùng nhập ở đây sẽ được gửi tới khối webhook kế tiếp.',
+  appr:'Khối duyệt trên Base. Đồng ý thì phiếu đi tiếp; từ chối hoặc yêu cầu bổ sung thì quay về theo mũi tên ghi bên dưới khối.',
+  switch:'Base rẽ nhánh theo giá trị trường của phiếu. Điều kiện của từng nhánh ghi ở nhãn vàng ngay dưới khối.',
+  par:'Base chia phiếu chạy song song nhiều nhánh cùng lúc.',
+  merge:'Base gộp các nhánh song song lại trước khi đi tiếp.',
+  in:'Lối vào nhận phiếu từ hệ thống hoặc quy trình khác.',
+  end:'Phiếu kết thúc ở đây.'
+};
+function flowPanelHTML(p){
+  const sel = state.fsel ? String(state.fsel) : '';
+  if (!sel){
+    const st = curStep();
+    return st ? '<div id="editor">' + editorHTML(p, st) + '</div>' : '<div class="finfo"><p class="muted">Bấm một khối trên sơ đồ để xem hoặc cấu hình.</p></div>';
+  }
+  const x = flowOf(p).find(y => String(y.id) === sel) || {t:'step', n:'Khối ' + sel, id:sel};
+  let b = '<div class="finfo"><span class="k">' + (x.t === 'hook' ? 'Webhook · chưa cấu hình' : FT[x.t]) + '</span><h2>' + esc(x.n) + '</h2><div class="small muted">Block ID <span class="mono">' + esc(sel) + '</span></div>';
+  if (x.t === 'hook'){
+    b += '<div class="note">Khối webhook này chưa có trong cấu hình nên tín hiệu Base gửi về từ đây đang bị bỏ qua.</div>';
+    const d = p.sampleSvc && SAMPLES[p.sampleSvc], hk = d && d.hooks.find(y => String(y.id) === sel);
+    if (hk) b += '<div class="small">Đứng sau <b>' + esc(hk.from || 'không rõ') + '</b>' + (hk.via ? ' (sau khi duyệt)' : '') + ', bước đó nhập ' + hk.f.length + ' trường.</div>' + (hk.f.length ? '<div class="fpills">' + hk.f.map(c => '<span class="fpill' + (hk.ff.includes(c) ? ' file' : '') + '">' + esc(fname(c)) + '</span>').join('') + '</div>' : '');
+    b += '<div><button class="btn primary" type="button" data-act="flowadd" data-id="' + esc(sel) + '" data-n="' + esc(x.n) + '">' + icon('plus') + 'Thêm vào cấu hình và chọn việc</button></div>';
+  } else {
+    b += '<p>' + (FC_INFO[x.t] || '') + '</p><p class="small muted">Chỉ khối Webhook mới cấu hình được việc cho hệ thống.</p>';
+  }
+  b += '<div><a class="btn ghost sm" href="https://service.base.vn/services/' + encodeURIComponent(p.svc) + '" target="_blank" rel="noopener">Mở dịch vụ trên Base</a></div></div>';
+  return b;
+}
+function flowCfgHTML(p){
+  const hs = p.steps.filter(s => !s.start), olds = hs.filter(s => s.ep !== 'new').length;
+  let l = '<section class="card"><div class="card-h"><div><h2>Lưu đồ trên Base</h2><div class="small muted">' + (p.flow ? 'Đọc từ dịch vụ ' + p.svc + '. ' : 'Dạng rút gọn theo các bước đã cấu hình. ') + 'Bấm vào một khối để cấu hình hoặc xem.</div></div><div class="inline"><div class="ck-loc fviews" role="group" aria-label="Kiểu xem"><button class="chip" type="button" data-act="fview" data-v="sd" aria-pressed="true">Sơ đồ</button><button class="chip" type="button" data-act="fview" data-v="ds" aria-pressed="false">Danh sách</button></div><button class="btn sm" type="button" data-act="reread">' + icon('refresh') + 'Đọc lại từ Base</button></div></div>';
+  l += '<div class="card-b" style="display:flex;flex-direction:column;gap:10px"><div class="note ' + (olds ? '' : 'ok') + '">' + (olds ? '<b>' + olds + '/' + hs.length + ' khối webhook còn gửi về Apps Script cũ.</b> <button class="linkbtn" type="button" data-act="migrate">Xem hướng dẫn chuyển</button>' : '<b>Cả ' + hs.length + ' khối webhook đã gửi về hệ thống mới.</b>') + '</div>' + (p.flowWarn ? '<div class="note">' + esc(p.flowWarn) + '</div>' : '');
+  l += '<div class="fc-legend"><span><i style="background:var(--accent);border-color:var(--accent)"></i>Webhook đã cấu hình</span><span><i style="border-style:dashed"></i>Webhook chưa cấu hình</span><span><i style="background:var(--accent-soft);border-color:transparent"></i>Duyệt</span><span><i style="background:var(--warn-soft);border-color:transparent"></i>Rẽ nhánh</span><span><i style="outline:2px solid var(--gold);border-color:transparent"></i>Đang chọn</span></div>';
+  l += '<div class="fc-wrap" id="fcd" role="region" aria-label="Sơ đồ lưu đồ, bấm khối để cấu hình" tabindex="0">' + fcDetailInner(p) + '</div></div></section>';
+  return '<div class="flowcfg">' + l + '<section class="card" id="fpanel" aria-live="polite">' + flowPanelHTML(p) + '</section></div>';
+}
+/* vẽ lại sơ đồ + bảng bên phải, giữ vị trí cuộn của sơ đồ */
+function refreshFlowCfg(scrollPanel){
+  const p = curProc(); if (!p) return;
+  const fd = $('#fcd'), fp = $('#fpanel');
+  if (fd){ const sl = fd.scrollLeft, stp = fd.scrollTop; fd.innerHTML = fcDetailInner(p); fd.scrollLeft = sl; fd.scrollTop = stp; }
+  if (fp){ fp.innerHTML = flowPanelHTML(p); if (scrollPanel && innerWidth <= 1100) fp.scrollIntoView({block:'start', behavior:'smooth'}); }
+}
 function flowHTML(p){
   const tr = flowOf(p), have = new Set(p.steps.map(s => String(s.block)));
   let h = '<div class="card-h"><div><h2>Lưu đồ trên Base</h2><div class="small muted">' + (p.flow ? 'Đọc từ dịch vụ ' + p.svc + '. ' : 'Dạng rút gọn theo các bước đã cấu hình. ') + 'Hệ thống chỉ xử lý ở các khối Webhook.</div></div><button class="btn sm" type="button" data-act="reread">' + icon('refresh') + 'Đọc lại từ Base</button></div>';
@@ -1192,7 +1262,10 @@ function viewDetail(p){
   h += '<label class="inline small" for="f-on"><span class="sw"><input type="checkbox" id="f-on" data-pbind="on"' + (p.on ? ' checked' : '') + '><span></span></span>' + (p.on ? 'Đang bật' : 'Đang tắt') + '</label><button class="btn sm" type="button" data-act="dupproc">Nhân bản</button><button class="btn ghost sm" type="button" data-act="askdelproc">Xoá</button></div></div>';
   if (state.confirm === 'proc:' + p.id) h += confirmBox('Xoá quy trình "' + esc(p.name) + '" và toàn bộ ' + p.steps.length + ' bước cấu hình? Dịch vụ trên Base không bị ảnh hưởng.', 'delproc', 'Xoá quy trình');
   h += '<div class="ptabs" role="tablist"><button class="ptab" role="tab" type="button" data-act="ptab" data-v="cfg" aria-selected="' + (state.ptab === 'cfg') + '">Cấu hình từng bước</button><button class="ptab" role="tab" type="button" data-act="ptab" data-v="flow" aria-selected="' + (state.ptab === 'flow') + '">Lưu đồ trên Base</button></div>';
-  if (state.ptab === 'flow') return h + '<section class="card">' + flowHTML(p) + '</section>';
+  if (state.ptab === 'flow'){
+    if (state.fview === 'ds') return h + '<section class="card">' + flowHTML(p).replace('<button class="btn sm" type="button" data-act="reread">', '<div class="inline"><div class="ck-loc fviews" role="group" aria-label="Kiểu xem"><button class="chip" type="button" data-act="fview" data-v="sd" aria-pressed="false">Sơ đồ</button><button class="chip" type="button" data-act="fview" data-v="ds" aria-pressed="true">Danh sách</button></div><button class="btn sm" type="button" data-act="reread">') .replace('Đọc lại từ Base</button></div>', 'Đọc lại từ Base</button></div></div>') + '</section>';
+    return h + flowCfgHTML(p);
+  }
   h += '<div class="dgrid"><nav class="card rail" aria-label="Các bước" id="rail">' + railHTML(p) + '</nav><section class="card" id="editor">' + editorHTML(p, st) + '</section></div>';
   return h;
 }
@@ -1345,6 +1418,7 @@ function fcNest(list){
 }
 const FC_AR = '<span class="fc-ar" aria-hidden="true"></span>';
 function fcBox(x, w){
+  if (w.detail) return fcBoxDetail(x, w);
   if (x.t === 'hook'){
     const s = w.sel[x.id], on = s && s.on;
     const tags = on ? CAPS.filter(k => s.caps[k.k]).map(k => '<i>' + esc(k.tag) + '</i>').join('') : '<i>bỏ qua</i>';
@@ -1352,6 +1426,18 @@ function fcBox(x, w){
   }
   if (x.t === 'note') return '<div class="fc-node fc-note">' + esc(x.n.replace(/^Đi tiếp vào /, '→ ')) + '</div>';
   return '<div class="fc-node fc-' + x.t + '"><span class="k">' + FT[x.t] + '</span>' + esc(x.n) + (x.id ? '<small>' + x.id + '</small>' : '') + '</div>';
+}
+function fcBoxDetail(x, w){
+  if (x.t === 'note') return '<div class="fc-node fc-note">' + esc(x.n.replace(/^Đi tiếp vào /, '→ ')) + '</div>';
+  const cur = w.cur === String(x.id) ? ' cur' : '';
+  if (x.t === 'hook'){
+    const s = w.steps[x.id];
+    const tags = s ? (CAPS.filter(k => s.caps[k.k]).map(k => '<i>' + esc(k.tag) + '</i>').join('') || '<i>chưa chọn việc</i>') : '<i>chưa cấu hình</i>';
+    const ep = s ? (s.ep === 'new' ? 'gửi về hệ thống mới' : 'gửi về Apps Script cũ') : 'tín hiệu đang bị bỏ qua';
+    return '<button type="button" class="fc-node fc-hook fc-click' + (s ? '' : ' off') + cur + '" data-act="fcpick" data-id="' + x.id + '" aria-pressed="' + !!cur + '" title="Bấm để cấu hình khối này"><span class="k">Webhook</span>' + esc(x.n) + '<small>' + x.id + '</small><span class="ep">' + ep + '</span><span class="fc-tags">' + tags + '</span></button>';
+  }
+  const body = '<span class="k">' + FT[x.t] + '</span>' + esc(x.n) + (x.id ? '<small>' + x.id + '</small>' : '');
+  return x.id ? '<button type="button" class="fc-node fc-' + x.t + ' fc-click' + cur + '" data-act="fcpick" data-id="' + x.id + '" title="Xem khối này">' + body + '</button>' : '<div class="fc-node fc-' + x.t + '">' + body + '</div>';
 }
 function fcBranches(kids, w){
   return '<div class="fc-brs">' + kids.map(k => {
@@ -1493,6 +1579,7 @@ function rerenderEditor(){
   const ed = $('#editor'), rail = $('#rail');
   if (ed) ed.innerHTML = editorHTML(p, st);
   if (rail) rail.innerHTML = railHTML(p);
+  const fd = $('#fcd'); if (fd){ const sl = fd.scrollLeft, stp = fd.scrollTop; fd.innerHTML = fcDetailInner(p); fd.scrollLeft = sl; fd.scrollTop = stp; }
 }
 function route(){
   const h = location.hash.replace('#', '');
@@ -1531,13 +1618,24 @@ document.addEventListener('click', e => {
       const root = document.documentElement, cur = root.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
       root.dataset.theme = cur === 'dark' ? 'light' : 'dark'; break;
     }
-    case 'open': closeDrawer(); state.pid = a.dataset.pid; state.si = +(a.dataset.si || 0); state.ptab = 'cfg'; state.pickOpen = false; go('quy-trinh'); break;
+    case 'open': closeDrawer(); state.fsel = null; state.pid = a.dataset.pid; state.si = +(a.dataset.si || 0); state.ptab = 'cfg'; state.pickOpen = false; go('quy-trinh'); break;
     case 'back': state.pid = null; render(); window.scrollTo(0, 0); break;
     case 'grp': state.grp = a.dataset.v; render(); break;
-    case 'ptab': state.ptab = a.dataset.v; render(); break;
+    case 'ptab': state.ptab = a.dataset.v; state.fsel = null; render(); break;
     case 'step': state.si = +a.dataset.i; state.pickOpen = false; rerenderEditor(); if (innerWidth <= 900){ const ed = $('#editor'); if (ed) ed.scrollIntoView({block:'start'}); } break;
     case 'flowgo': state.si = +a.dataset.i; state.ptab = 'cfg'; render(); break;
-    case 'flowadd': p.steps.push(mk({name:a.dataset.n, block:+a.dataset.id})); markDirty(p.id + ':add:' + a.dataset.id); toast('Đã thêm khối ' + a.dataset.id + ' vào cấu hình'); render(); break;
+    case 'fview': state.fview = a.dataset.v; render(); break;
+    case 'fcpick': {
+      const id = a.dataset.id, i = p.steps.findIndex(s => String(s.block) === String(id));
+      if (i >= 0){ state.si = i; state.fsel = null; state.pickOpen = false; state.confirm = null; } else state.fsel = id;
+      refreshFlowCfg(true); break;
+    }
+    case 'flowadd': {
+      p.steps.push(mk({name:a.dataset.n, block:+a.dataset.id})); markDirty(p.id + ':add:' + a.dataset.id); toast('Đã thêm khối ' + a.dataset.id + ' vào cấu hình, chọn việc cho khối này');
+      state.si = p.steps.length - 1; state.fsel = null;
+      if ($('#fcd')) refreshFlowCfg(true); else render();
+      break;
+    }
     case 'reread': {
       const d = p && p.sampleSvc && SAMPLES[p.sampleSvc];
       if (!d){ toast('Bản thật gọi GET /api/quy-trinh/<id>/doi-chieu-base: đọc lại lưu đồ và báo khối nào mới thêm hoặc đã xoá'); break; }

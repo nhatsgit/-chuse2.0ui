@@ -32,13 +32,13 @@ setTimeout(() => {
   });
   T('bo chon truong hien lua chon lay tu Base', () => { click('[data-act="picker"]'); if (!/Lựa chọn: Văn thư đến · Văn thư đi · Xin giữ số · Chèn số \/ Bù số/.test(q('#picklist').textContent)) throw new Error('khong thay lua chon'); click('[data-act="picker"]'); });
   T('chay thu canh bao dich cu', () => { click('[data-act="dry"]'); const first = q('.trace li'); if (!first || !/Apps Script cũ/.test(first.textContent)) throw new Error('khong canh bao'); click('[data-act="close"]'); });
-  T('luu do: 10/10 khoi con gui ve cu', () => { click('[data-act="ptab"][data-v="flow"]'); if (!/10\/10 khối webhook còn gửi về Apps Script cũ/.test(q('#view').textContent)) throw new Error('khong thay'); if (qa('.fl.hook .pill.warn').length !== 10) throw new Error('nhan ' + qa('.fl.hook .pill.warn').length); });
+  T('luu do: 10/10 khoi con gui ve cu', () => { click('[data-act="ptab"][data-v="flow"]'); if (!/10\/10 khối webhook còn gửi về Apps Script cũ/.test(q('#view').textContent)) throw new Error('khong thay'); const cu = qa('#fcd .fc-hook .ep').filter(e => /Apps Script cũ/.test(e.textContent)).length; if (cu !== 10) throw new Error('nhan ' + cu); });
   T('huong dan chuyen: danh dau 3 khoi -> con 7', () => {
     click('[data-act="migrate"]'); if (!q('#mig-url') || !/a\.run\.app/.test(q('#mig-url').value)) throw new Error('khong co dia chi moi');
     qa('[data-mig]').slice(0, 3).forEach(cb => { cb.checked = true; });
     click('[data-act="migcheck"]');
     if (!/7\/10 khối webhook còn gửi về Apps Script cũ/.test(q('#view').textContent)) throw new Error('banner: ' + (q('.note') || {}).textContent);
-    if (qa('.fl.hook .pill.ok').length !== 3) throw new Error('nhan moi ' + qa('.fl.hook .pill.ok').length);
+    const moi = qa('#fcd .fc-hook .ep').filter(e => /hệ thống mới/.test(e.textContent)).length; if (moi !== 3) throw new Error('nhan moi ' + moi);
   });
   T('nut chep dia chi khong loi', () => { click('[data-act="migrate"]'); click('[data-act="copyurl"]'); click('[data-act="close"]'); });
   T('Nhap vat tu: da chuyen het', () => { click('[data-act="back"]'); click('tr[data-pid="kho-nhap-vt"]'); click('[data-act="ptab"][data-v="flow"]'); if (!/khối webhook đã gửi về hệ thống mới/.test(q('#view').textContent)) throw new Error('khong thay'); click('[data-act="ptab"][data-v="cfg"]'); });
