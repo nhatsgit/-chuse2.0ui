@@ -354,6 +354,78 @@ textarea{resize:vertical;line-height:1.45}
 .fc-entries{display:flex;gap:40px;align-items:flex-start;min-width:max-content}
 .fc-extra{display:flex;flex-direction:column;gap:28px;padding-left:28px;border-left:2px dashed var(--border-strong)}
 .fc-legend{display:flex;gap:6px 14px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.fc-bx{display:flex;flex-direction:column;align-items:center}
+.fc-h .fc-seq{flex-direction:row;align-items:center}
+.fc-h .fc-ar{width:18px;height:2px}
+.fc-h .fc-ar::after{left:auto;right:-1px;bottom:auto;top:-4px;border:5px solid transparent;border-right:0;border-left:6px solid var(--line-strong)}
+.fc-h .fc-brs{flex-direction:column;align-items:flex-start;gap:10px;padding-top:0;padding-left:10px;border-top:0;border-left:2px solid var(--line-strong)}
+.fc-h .fc-br{flex-direction:row;align-items:center}
+.fc-h .fc-entries{flex-direction:column;gap:28px}
+.fc-h .fc-extra{padding-left:0;border-left:0;padding-top:20px;border-top:2px dashed var(--border-strong)}
+.fc-h .fc-node{min-width:112px;max-width:170px}
+.fc-h .fc-side{max-width:170px}
+.fdir{display:inline-flex;gap:4px}
+/* ---- lưu đồ: giao diện ---- */
+.fc-wrap{background-color:var(--surface-2);background-image:radial-gradient(circle,var(--line) 1.1px,transparent 1.4px);background-size:18px 18px;padding:26px 24px}
+.fc-entries{transform-origin:0 0}
+.fc-node{border-radius:12px;padding:8px 12px 9px;box-shadow:var(--sh-1);transition:transform .12s ease,box-shadow .12s ease}
+.fc-node .k{display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:3px}
+.fc-node .k::before{content:"";flex:none;display:inline-grid;place-items:center;width:17px;height:17px;border-radius:50%;font-size:9.5px;line-height:1;letter-spacing:0;text-transform:none;background:var(--surface-2);color:inherit}
+.fc-step .k::before{content:"✎"}
+.fc-appr .k::before{content:"✓";font-weight:700}
+.fc-switch .k::before{content:"◆";font-size:8px}
+.fc-par .k::before{content:"⇉"}
+.fc-in .k::before{content:"▶";font-size:7.5px}
+.fc-end .k::before{content:"■";font-size:7.5px}
+.fc-merge .k::before{content:"⤙"}
+.fc-hook .k::before{content:"⚡";background:rgba(255,255,255,.22)}
+.fc-node small{display:block;width:max-content;margin:5px auto 0;padding:0 7px;border-radius:99px;background:var(--surface-2);font-size:10px;line-height:16px}
+.fc-node.fc-hook small{background:rgba(255,255,255,.18)}
+.fc-node.fc-hook.off small{background:var(--surface-2)}
+.fc-node.fc-step{border-left:3px solid var(--line-strong)}
+.fc-node.fc-appr{border-left:3px solid var(--accent);border-radius:12px}
+.fc-node.fc-switch{border-left:3px solid var(--warn);border-radius:12px}
+.fc-node.fc-par{border-left:3px solid var(--accent);border-radius:12px}
+.fc-node.fc-hook{border-radius:12px;box-shadow:0 6px 16px -8px var(--accent-strong),var(--sh-1)}
+.fc-node.fc-hook.off{box-shadow:none}
+.fc-node.fc-in,.fc-node.fc-end,.fc-node.fc-merge{border-radius:20px;padding-inline:18px;border:2px solid var(--fg)}
+.fc-node.fc-end{background:var(--fg);color:var(--bg)}
+.fc-node.fc-end small{background:transparent;color:inherit;opacity:.7}
+.fc-node.fc-end .k{color:inherit;opacity:.8}
+.fc-node.fc-click:hover{transform:translateY(-2px);box-shadow:var(--sh-2)}
+.fc-node.cur{outline:3px solid var(--gold);outline-offset:3px}
+.fc-ar{background:var(--line-strong)}
+.fc-bl{display:inline-flex;align-items:center;gap:6px;padding:3px 11px;box-shadow:var(--sh-1);line-height:1.35}
+.fc-bl::before{content:"";flex:none;width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.75}
+.fc-side{background:var(--surface);border:1px dashed var(--line-strong);border-radius:8px;padding:3px 8px;margin-top:6px}
+/* nhánh: đường nối dạng cây (dọc: thanh ngang ở trên; ngang: thanh dọc bên trái) */
+.fc-brs{border-top:0;padding-top:0;gap:0}
+.fc-brs > .fc-br{position:relative;padding:18px 8px 0}
+.fc-brs > .fc-br::before{content:"";position:absolute;top:0;left:0;right:0;border-top:2px solid var(--line-strong)}
+.fc-brs > .fc-br:first-child::before{left:50%}
+.fc-brs > .fc-br:last-child::before{right:50%}
+.fc-brs > .fc-br::after{content:"";position:absolute;top:0;left:calc(50% - 1px);height:18px;border-left:2px solid var(--line-strong)}
+.fc-brs > .fc-br:only-child::before{display:none}
+.fc-h .fc-brs{border-left:0;padding-left:0;gap:0}
+.fc-h .fc-brs > .fc-br{padding:7px 0 7px 20px}
+.fc-h .fc-brs > .fc-br::before{top:0;bottom:0;left:0;right:auto;border-top:0;border-left:2px solid var(--line-strong)}
+.fc-h .fc-brs > .fc-br:first-child::before{top:50%;left:0}
+.fc-h .fc-brs > .fc-br:last-child::before{bottom:50%;right:auto}
+.fc-h .fc-brs > .fc-br::after{top:calc(50% - 1px);left:0;height:0;width:20px;border-left:0;border-top:2px solid var(--line-strong)}
+/* ngang: canh mép trên, đường nối chạy ở độ cao 24px để sơ đồ gọn, nhánh tỏa xuống */
+.fc-h .fc-seq{align-items:flex-start}
+.fc-h .fc-ar{margin-top:23px}
+.fc-h .fc-bl{margin-top:13px}
+.fc-h .fc-brs > .fc-br{align-items:flex-start;padding:0 0 16px 20px}
+.fc-h .fc-brs > .fc-br:last-child{padding-bottom:0}
+.fc-h .fc-brs > .fc-br::before{top:0;bottom:0}
+.fc-h .fc-brs > .fc-br:first-child::before{top:24px;bottom:0}
+.fc-h .fc-brs > .fc-br:last-child::before{top:0;bottom:auto;height:24px}
+.fc-h .fc-brs > .fc-br:first-child:last-child::before{display:none}
+.fc-h .fc-brs > .fc-br::after{top:23px}
+.fzoom{display:inline-flex;align-items:center;gap:2px}
+.fzoom .chip{min-width:34px;justify-content:center}
+.fzoom output{font-size:12px;min-width:42px;text-align:center;color:var(--muted);font-variant-numeric:tabular-nums}
 .fc-legend span{display:inline-flex;gap:6px;align-items:center}
 .fc-legend i{display:inline-block;width:14px;height:10px;border-radius:3px;border:1px solid var(--line-strong)}
 .wzh.flash{animation:wzflash 1.4s ease-out}
@@ -1007,7 +1079,7 @@ const LOGS = [
 
 /* ================= trạng thái ================= */
 const state = {
-  view:'quy-trinh', pid:null, si:0, ptab:'cfg', q:'', grp:'Tất cả', dtab:'ten', dsel:0, lf:'Tất cả', long:false,
+  view:'quy-trinh', pid:null, si:0, ptab:'cfg', fdir:'ngang', fzoom:1, q:'', grp:'Tất cả', dtab:'ten', dsel:0, lf:'Tất cả', long:false,
   pickOpen:false, pickQ:'', dirty:new Set(), wiz:null, versions:[], confirm:null, resetArm:false,
   issues:[
     {id:1, sev:'bad', title:'Luồng "Chèn số / Trả số" chưa có trong cấu hình', where:'Văn thư đi_BHCK · bước Cấp số', fix:'Mở bước', pid:'vti-bhck', si:3},
@@ -1190,13 +1262,19 @@ function editorHTML(p, st){
     b += '<div class="row2"><div class="fld"><label for="f-src">Lấy file từ</label><select id="f-src" data-bind="src">' + options(DICT.file, st.src, 'Không lấy file') + '</select></div>' +
          '<div class="fld"><label for="f-dst">Gửi file đã xử lý vào</label><select id="f-dst" data-bind="dst">' + options(DICT.file, st.dst, 'Không gửi') + '</select></div></div>';
     b += '<p class="help">File Word được chuyển sang PDF trước khi lưu. Thư mục chưa có sẽ được tạo.</p>';
+    b += '<div class="fld"><label for="f-src2">Lưu thêm 1 file riêng</label><select id="f-src2" data-bind="src2">' + options(FILE2, st.src2, 'Không lưu thêm') + '</select><div class="help">VD vừa lưu văn bản chính vừa lưu phụ lục, hoặc lưu riêng file AI đã đọc. File này không thay file chính.</div></div>';
+    if (st.src2) b += '<div class="row2"><div class="fld"><label for="f-drive2">Thư mục cho file thứ 2</label><select id="f-drive2" data-bind="drive2">' + options(DICT.thumuc, st.drive2, 'Cùng thư mục file chính') + '</select></div>' +
+      (st.src2 !== FILE_AI ? '<div class="fld"><label for="f-pick2">Trường có nhiều file thì lấy</label><input type="text" id="f-pick2" data-bind="pick2" value="' + esc(st.pick2 || '') + '" placeholder="1 · 2 · cuoi · tat_ca · chữ trong tên"></div>' : '') + '</div>';
     h += capSec('file', 'Lưu và chuyển file', b);
   }
   if (c.ai){
     const ai = DICT.ai.find(x => x.k === st.ai);
     let b = '<div class="fld"><label for="f-ai">Mẫu AI</label><select id="f-ai" data-bind="ai">' + options(DICT.ai, st.ai, 'Chọn mẫu AI…') + '</select></div>';
-    if (ai) b += '<div class="aicard"><div><span class="k">Đọc file:</span> ' + esc(st.src || 'chưa chọn') + '</div><div><span class="k">Điền ' + ai.out.length + ' trường:</span> ' + ai.out.map(o => esc(fname(o[0]))).join(', ') + '</div><div><span class="k">Cách điền:</span> ' + (ai.ow ? 'ghi đè cả ô đã có giá trị' : 'chỉ điền ô đang trống') + ' · <span class="mono">' + esc(ai.model) + '</span></div></div>';
-    if (!st.src) b += '<div class="note">AI cần một file để đọc. <button class="linkbtn" type="button" data-act="needfile">Bật "Lưu và chuyển file" và chọn nơi lấy file</button></div>';
+    b += '<div class="row2"><div class="fld"><label for="f-aisrc">AI đọc file</label><select id="f-aisrc" data-bind="aiSrc">' + options(DICT.file.filter(x => x.v !== 'DRIVE'), st.aiSrc, st.src ? 'Cùng file "' + st.src + '"' : 'Chọn file cho AI…') + '</select></div>' +
+      (st.aiSrc ? '<div class="fld"><label for="f-aipick">Trường có nhiều file thì đọc</label><input type="text" id="f-aipick" data-bind="aiPick" value="' + esc(st.aiPick || '') + '" placeholder="1 · 2 · cuoi · chữ trong tên, VD da ky"></div>' : '') + '</div>';
+    if (st.aiSrc && st.aiSrc !== st.src) b += '<p class="help">AI đọc riêng file của "' + esc(st.aiSrc) + '"' + (st.src ? '; file chính lưu / gửi vẫn là "' + esc(st.src) + '"' : '') + '. Muốn lưu luôn file AI đã đọc: ở "Lưu và chuyển file" chọn "Lưu thêm 1 file riêng" → "' + FILE_AI + '".</p>';
+    if (ai) b += '<div class="aicard"><div><span class="k">Đọc file:</span> ' + esc(st.aiSrc || st.src || 'chưa chọn') + (st.aiPick ? ' (' + esc(st.aiPick) + ')' : '') + '</div><div><span class="k">Điền ' + ai.out.length + ' trường:</span> ' + ai.out.map(o => esc(fname(o[0]))).join(', ') + '</div><div><span class="k">Cách điền:</span> ' + (ai.ow ? 'ghi đè cả ô đã có giá trị' : 'chỉ điền ô đang trống') + ' · <span class="mono">' + esc(ai.model) + '</span></div></div>';
+    if (!st.src && !st.aiSrc) b += '<div class="note">AI cần một file để đọc. <button class="linkbtn" type="button" data-act="needfile">Bật "Lưu và chuyển file" và chọn nơi lấy file</button></div>';
     h += capSec('ai', 'Đọc tài liệu bằng AI', b);
   }
   if (c.office){
@@ -1250,7 +1328,7 @@ function fcDetailInner(p){
   const groups = [[]];
   roots.forEach((r, i) => { if (i > 0 && r.t === 'in') groups.push([]); groups[groups.length - 1].push(r); });
   const extra = groups.slice(1).map(g => '<div class="fc-br"><span class="fc-bl par">Lối vào phụ</span>' + FC_AR + fcSeq(g, w) + '</div>').join('');
-  return '<div class="fc-entries">' + fcSeq(groups[0], w) + (extra ? '<div class="fc-extra">' + extra + '</div>' : '') + '</div>';
+  return '<div class="fc-entries"' + (state.fzoom !== 1 ? ' style="zoom:' + state.fzoom + '"' : '') + '>' + fcSeq(groups[0], w) + (extra ? '<div class="fc-extra">' + extra + '</div>' : '') + '</div>';
 }
 const FC_INFO = {
   step:'Bước nhập liệu trên Base. Hệ thống không chạy ở khối này; những gì người dùng nhập ở đây sẽ được gửi tới khối webhook kế tiếp.',
@@ -1282,10 +1360,10 @@ function flowPanelHTML(p){
 }
 function flowCfgHTML(p){
   const hs = p.steps.filter(s => !s.start), olds = hs.filter(s => s.ep !== 'new').length;
-  let l = '<section class="card"><div class="card-h"><div><h2>Lưu đồ trên Base</h2><div class="small muted">' + (p.flow ? 'Đọc từ dịch vụ ' + p.svc + '. ' : 'Dạng rút gọn theo các bước đã cấu hình. ') + 'Bấm vào một khối để cấu hình hoặc xem.</div></div><div class="inline"><div class="ck-loc fviews" role="group" aria-label="Kiểu xem"><button class="chip" type="button" data-act="fview" data-v="sd" aria-pressed="true">Sơ đồ</button><button class="chip" type="button" data-act="fview" data-v="ds" aria-pressed="false">Danh sách</button></div><button class="btn sm" type="button" data-act="reread">' + icon('refresh') + 'Đọc lại từ Base</button></div></div>';
+  let l = '<section class="card"><div class="card-h"><div><h2>Lưu đồ trên Base</h2><div class="small muted">' + (p.flow ? 'Đọc từ dịch vụ ' + p.svc + '. ' : 'Dạng rút gọn theo các bước đã cấu hình. ') + 'Bấm vào một khối để cấu hình hoặc xem.</div></div><div class="inline">' + '<div class="ck-loc fdir" role="group" aria-label="Hướng sơ đồ"><button class="chip" type="button" data-act="fdir" data-v="ngang" aria-pressed="' + (state.fdir !== 'doc') + '">Ngang</button><button class="chip" type="button" data-act="fdir" data-v="doc" aria-pressed="' + (state.fdir === 'doc') + '">Dọc</button></div>' + '<div class="fzoom" role="group" aria-label="Cỡ sơ đồ"><button class="chip" type="button" data-act="fzoom" data-v="-" aria-label="Thu nhỏ sơ đồ">−</button><output>' + Math.round(state.fzoom * 100) + '%</output><button class="chip" type="button" data-act="fzoom" data-v="+" aria-label="Phóng to sơ đồ">+</button></div>' + '<div class="ck-loc fviews" role="group" aria-label="Kiểu xem"><button class="chip" type="button" data-act="fview" data-v="sd" aria-pressed="true">Sơ đồ</button><button class="chip" type="button" data-act="fview" data-v="ds" aria-pressed="false">Danh sách</button></div><button class="btn sm" type="button" data-act="reread">' + icon('refresh') + 'Đọc lại từ Base</button></div></div>';
   l += '<div class="card-b" style="display:flex;flex-direction:column;gap:10px"><div class="note ' + (olds ? '' : 'ok') + '">' + (olds ? '<b>' + olds + '/' + hs.length + ' khối webhook còn gửi về Apps Script cũ.</b> <button class="linkbtn" type="button" data-act="migrate">Xem hướng dẫn chuyển</button>' : '<b>Cả ' + hs.length + ' khối webhook đã gửi về hệ thống mới.</b>') + '</div>' + (p.flowWarn ? '<div class="note">' + esc(p.flowWarn) + '</div>' : '');
   l += '<div class="fc-legend"><span><i style="background:var(--accent);border-color:var(--accent)"></i>Webhook đã cấu hình</span><span><i style="border-style:dashed"></i>Webhook chưa cấu hình</span><span><i style="background:var(--accent-soft);border-color:transparent"></i>Duyệt</span><span><i style="background:var(--warn-soft);border-color:transparent"></i>Rẽ nhánh</span><span><i style="outline:2px solid var(--gold);border-color:transparent"></i>Đang chọn</span></div>';
-  l += '<div class="fc-wrap" id="fcd" role="region" aria-label="Sơ đồ lưu đồ, bấm khối để cấu hình" tabindex="0">' + fcDetailInner(p) + '</div></div></section>';
+  l += '<div class="fc-wrap' + (state.fdir !== 'doc' ? ' fc-h' : '') + '" id="fcd" role="region" aria-label="Sơ đồ lưu đồ, bấm khối để cấu hình" tabindex="0">' + fcDetailInner(p) + '</div></div></section>';
   return '<div class="flowcfg">' + l + '<section class="card" id="fpanel" aria-live="polite">' + flowPanelHTML(p) + '</section></div>';
 }
 /* vẽ lại sơ đồ + bảng bên phải, giữ vị trí cuộn của sơ đồ */
@@ -1393,7 +1471,7 @@ function dryRun(){
   const c = st.caps, tr = [st.start || st.ep === 'new' ? ['ok', 'Nhận tín hiệu từ Base', 'Khối ' + st.block + ' · phiếu thử'] : ['warn', 'Nhận tín hiệu từ Base', 'Khối ' + st.block + ' vẫn gửi về Apps Script cũ. Chạy thử bỏ qua chuyện này, nhưng khi chạy thật hệ thống mới sẽ không nhận được tín hiệu cho tới khi đổi URL trên Base.']];
   if (!isSet(st)) tr.push(['skip', 'Không có việc nào được bật', 'Hệ thống ghi nhận tín hiệu rồi dừng']);
   if (c.truong) tr.push(st.fields.length ? ['ok', 'Lưu ' + st.fields.length + ' trường vào bảng dữ liệu', st.fields.map(fname).join(', ')] : ['warn', 'Lưu dữ liệu phiếu', 'Chưa chọn trường nào']);
-  if (c.ai) tr.push(!st.ai ? ['err', 'Đọc tài liệu bằng AI', 'Chưa chọn mẫu AI'] : (st.src && c.file ? ['ok', 'AI: ' + st.ai, 'Đọc file từ "' + st.src + '"'] : ['err', 'AI: ' + st.ai, 'Chưa chọn nơi lấy file nên AI không chạy']));
+  if (c.ai) tr.push(!st.ai ? ['err', 'Đọc tài liệu bằng AI', 'Chưa chọn mẫu AI'] : (st.aiSrc || (st.src && c.file) ? ['ok', 'AI: ' + st.ai, 'Đọc file từ "' + (st.aiSrc || st.src) + '"' + (st.aiPick ? ' (' + st.aiPick + ')' : '')] : ['err', 'AI: ' + st.ai, 'Chưa chọn nơi lấy file nên AI không chạy']));
   if (c.ten){
     const r = resolveTpl(st.nameTpl), len = r.text.length;
     if (r.missing.length) tr.push(['err', 'Đặt tên phiếu', 'Thiếu dữ liệu cho ' + r.missing.map(fname).join(', ')]);
@@ -1403,7 +1481,7 @@ function dryRun(){
       tr.push(b > OFFICE_MAX ? ['warn', 'Đăng Base Office', b + ' byte, tự rút gọn còn ' + officeBytes(cutBytes(r.text, OFFICE_MAX - PAD)) + ' byte'] : ['ok', 'Đăng Base Office', 'Tên ' + b + '/500 byte · đơn vị ' + st.office + (st.capso ? ' · có cấp số' : '')]);
     }
   } else if (c.office) tr.push(st.office ? ['ok', 'Đăng Base Office', 'Đơn vị ' + st.office] : ['err', 'Đăng Base Office', 'Chưa chọn đơn vị']);
-  if (c.file){ if (st.drive) tr.push(['ok', 'Cất file vào Drive', st.drive]); if (st.dst) tr.push(['ok', 'Gửi file vào trường', st.dst]); }
+  if (c.file){ if (st.drive) tr.push(['ok', 'Cất file vào Drive', st.drive]); if (st.src2) tr.push(['ok', 'Lưu thêm file riêng', st.src2 + ' → ' + (st.drive2 || st.drive || 'thư mục của bước')]); if (st.dst) tr.push(['ok', 'Gửi file vào trường', st.dst]); }
   if (isSet(st)) tr.push(['ok', 'Đẩy lên Base', 'Giữ nguyên người theo dõi hiện có']);
   if (c.lt) st.lt.forEach(t => tr.push(['ok', 'Gửi số liệu sang quy trình khác', t.proc + ' · ' + (t.fields.length || 'tất cả') + ' trường']));
   if (c.exec && st.exec) tr.push(st.exec.field && st.exec.user ? ['ok', 'Cho phiếu khác đi tiếp', 'ID lấy từ "' + fname(st.exec.field) + '" · tài khoản ' + st.exec.user] : ['err', 'Cho phiếu khác đi tiếp', 'Chưa chọn trường chứa ID hoặc tài khoản thực hiện']);
@@ -1498,7 +1576,7 @@ function fcItem(x, w){
   if (x.t === 'switch' || x.t === 'par') return '<div class="fc-seq">' + fcBox(x, w) + (kids.length ? FC_AR + fcBranches(kids, w) : '') + '</div>';
   if (x.t === 'appr'){
     const notes = kids.filter(k => k.t === 'note'), brs = kids.filter(k => k.t === 'branch');
-    return '<div class="fc-seq">' + fcBox(x, w) + (notes.length ? '<div class="fc-side">' + notes.map(n => '↩ ' + esc(n.n)).join('<br>') + '</div>' : '') + (brs.length ? FC_AR + fcBranches(brs, w) : '') + '</div>';
+    return '<div class="fc-seq"><div class="fc-bx">' + fcBox(x, w) + (notes.length ? '<div class="fc-side">' + notes.map(n => '↩ ' + esc(n.n)).join('<br>') + '</div>' : '') + '</div>' + (brs.length ? FC_AR + fcBranches(brs, w) : '') + '</div>';
   }
   if (x.t === 'note' && kids.length) return '<div class="fc-seq">' + (x.n ? fcBox(x, w) + FC_AR : '') + fcSeq(kids, w) + '</div>';
   return '<div class="fc-seq">' + fcBox(x, w) + (kids.length ? FC_AR + fcSeq(kids, w) : '') + '</div>';
@@ -1513,7 +1591,7 @@ function wzDiagram(d, w){
   const groups = [[]];
   roots.forEach((r, i) => { if (i > 0 && r.t === 'in') groups.push([]); groups[groups.length - 1].push(r); });
   const extra = groups.slice(1).map(g => '<div class="fc-br"><span class="fc-bl par">Lối vào phụ</span>' + FC_AR + fcSeq(g, w) + '</div>').join('');
-  s += '<div class="fc-wrap" role="region" aria-label="Sơ đồ lưu đồ dịch vụ ' + d.svc + '" tabindex="0"><div class="fc-entries">' + fcSeq(groups[0], w) + (extra ? '<div class="fc-extra">' + extra + '</div>' : '') + '</div></div>';
+  s += '<div class="fc-wrap' + (state.fdir !== 'doc' ? ' fc-h' : '') + '" role="region" aria-label="Sơ đồ lưu đồ dịch vụ ' + d.svc + '" tabindex="0"><div class="fc-entries"' + (state.fzoom !== 1 ? ' style="zoom:' + state.fzoom + '"' : '') + '>' + fcSeq(groups[0], w) + (extra ? '<div class="fc-extra">' + extra + '</div>' : '') + '</div></div>';
   return s;
 }
 function wzTreeHTML(d){
@@ -1545,7 +1623,7 @@ function renderWizard(){
     if (eps.old) b += '<div class="note"><b>' + eps.old + '/' + d.hooks.length + ' khối webhook đang gửi về Apps Script cũ.</b> Sau khi tạo, tab "Lưu đồ trên Base" có hướng dẫn đổi địa chỉ.</div>';
     d.warn.forEach(t => { b += '<div class="note">' + esc(t) + '</div>'; });
     b += wzSplitHTML(d, w);
-    b += '<div class="fc-head"><h3>Lưu đồ trên Base</h3><button class="btn ghost sm" type="button" data-act="wzbig">' + (w.big ? 'Thu nhỏ' : 'Phóng to') + '</button><button class="btn ghost sm" type="button" data-act="wztree">' + (w.tree ? 'Ẩn sơ đồ' : 'Xem sơ đồ') + '</button></div>';
+    b += '<div class="fc-head"><h3>Lưu đồ trên Base</h3>' + (w.tree ? '<div class="ck-loc fdir" role="group" aria-label="Hướng sơ đồ"><button class="chip" type="button" data-act="fdir" data-v="ngang" aria-pressed="' + (state.fdir !== 'doc') + '">Ngang</button><button class="chip" type="button" data-act="fdir" data-v="doc" aria-pressed="' + (state.fdir === 'doc') + '">Dọc</button></div>' + '<div class="fzoom" role="group" aria-label="Cỡ sơ đồ"><button class="chip" type="button" data-act="fzoom" data-v="-" aria-label="Thu nhỏ sơ đồ">−</button><output>' + Math.round(state.fzoom * 100) + '%</output><button class="chip" type="button" data-act="fzoom" data-v="+" aria-label="Phóng to sơ đồ">+</button></div>' : '') + '<button class="btn ghost sm" type="button" data-act="wzbig">' + (w.big ? 'Thu nhỏ' : 'Phóng to') + '</button><button class="btn ghost sm" type="button" data-act="wztree">' + (w.tree ? 'Ẩn sơ đồ' : 'Xem sơ đồ') + '</button></div>';
     if (w.tree) b += wzDiagram(d, w);
     b += '<h3 style="font-size:14px;font-weight:600;margin-top:4px">Chọn việc cho từng webhook</h3>';
     b += '<div class="wzbar"><button class="btn sm" type="button" data-act="wzall" data-v="1">Chọn tất cả</button><button class="btn sm" type="button" data-act="wzall" data-v="0">Bỏ chọn tất cả</button><button class="btn sm" type="button" data-act="wzsuggest">Dùng gợi ý cho tất cả</button></div>';
@@ -1677,6 +1755,8 @@ document.addEventListener('click', e => {
     case 'step': state.capOpen = null; state.si = +a.dataset.i; state.pickOpen = false; rerenderEditor(); if (innerWidth <= 900){ const ed = $('#editor'); if (ed) ed.scrollIntoView({block:'start'}); } break;
     case 'flowgo': state.si = +a.dataset.i; state.ptab = 'cfg'; render(); break;
     case 'fview': state.fview = a.dataset.v; render(); break;
+    case 'fdir': state.fdir = a.dataset.v; render(); if (state.wiz) renderWizard(); break;
+    case 'fzoom': state.fzoom = Math.min(1.5, Math.max(0.5, Math.round((state.fzoom + (a.dataset.v === '+' ? 0.1 : -0.1)) * 10) / 10)); render(); if (state.wiz) renderWizard(); break;
     case 'fcpick': {
       const id = a.dataset.id, i = p.steps.findIndex(s => String(s.block) === String(id));
       if (i >= 0){ state.si = i; state.fsel = null; state.pickOpen = false; state.confirm = null; } else state.fsel = id;
@@ -1921,33 +2001,61 @@ const PRESET = {
   vt_di_cap_so: ['Văn thư đi — cấp số', ['ghi_truong', 'cap_so', 'kiem_trung_so', 'vt_di_ten_cap_so', 'vt_di_dong_so_file', 'day_file_base', 'dat_noi_dung', 'dong_bo_base', 'sap_xep_so']]
 };
 const isDi = p => /văn thư đi/i.test(p.name);
+const FILE_AI = 'File AI đã đọc';
+const FILE2 = [{k:FILE_AI}].concat(DICT.file.filter(x => x.v !== 'DRIVE'));
+const fileTu = k => k === FILE_AI ? 'ai' : ((DICT.file.find(x => x.k === k) || {}).v || k);
+const dirOf = k => (DICT.thumuc.find(x => x.k === k) || {}).v || '';
+/** Tham số file của doc_ai + chức năng lưu file thứ 2 (dùng chung cho văn thư và quy trình khác). */
+function fileExtras(st){
+  const c = st.caps, ai = c.ai && st.aiSrc && st.aiSrc !== st.src ? {tu: fileTu(st.aiSrc)} : null;
+  if (ai && st.aiPick) ai.chon = st.aiPick;
+  let save2 = null;
+  if (c.file && st.src2){
+    save2 = {loai:'luu_drive', tham_so:{tu: fileTu(st.src2)}};
+    if (st.pick2 && st.src2 !== FILE_AI) save2.tham_so.chon = st.pick2;
+    if (st.drive2) save2.tham_so.thu_muc = dirOf(st.drive2);
+  }
+  return {ai, save2};
+}
 /** Chuỗi suy ra từ "Bước này làm gì?" — văn thư dùng mẫu có sẵn của backend, quy trình khác ghép theo việc đã bật. */
 function derivedChain(p, st){
   const c = st.caps;
   if (p.e === 'vanthu'){
-    const k = c.ai && st.src ? (isDi(p) ? 'vt_di_ai' : 'vt_den_ai') : (isDi(p) && st.capso ? 'vt_di_cap_so' : (isDi(p) ? 'vt_di_chuyen_tiep' : 'vt_den_chuyen_tiep'));
-    return {key:k, label:PRESET[k][0], chain:PRESET[k][1].map(l => ({loai:l}))};
+    const k = c.ai && (st.src || st.aiSrc) ? (isDi(p) ? 'vt_di_ai' : 'vt_den_ai') : (isDi(p) && st.capso ? 'vt_di_cap_so' : (isDi(p) ? 'vt_di_chuyen_tiep' : 'vt_den_chuyen_tiep'));
+    const x = fileExtras(st), chain = PRESET[k][1].map(l => (l === 'doc_ai' && x.ai && st.src ? {loai:l, tham_so:x.ai} : {loai:l}));
+    if (x.save2){ const at = chain.findIndex(y => y.loai === 'dong_bo_base'); chain.splice(at < 0 ? chain.length : at, 0, x.save2); }
+    return {key:k, label:PRESET[k][0] + (x.ai && st.src || x.save2 ? ' + file riêng' : ''), chain};
   }
-  const ch = [];
+  const ch = [], x = fileExtras(st);
   if (c.truong) ch.push('ghi_truong');
-  if (c.ai || (c.file && st.src)) ch.push('tai_file');
-  if (c.ai) ch.push('doc_ai');
-  if (c.file && st.drive) ch.push('luu_drive');
+  if ((c.file && st.src) || (c.ai && !x.ai)) ch.push('tai_file');
+  if (c.ai) ch.push(x.ai ? {loai:'doc_ai', tham_so:x.ai} : 'doc_ai');
+  if (c.file && st.drive) ch.push(st.src ? 'luu_drive' : {loai:'luu_drive', tham_so:{tu:'ai'}});
+  if (x.save2) ch.push(x.save2);
   if (c.ten) ch.push('dat_ten_phieu', 'dat_noi_dung');
   if (isSet(st)) ch.push('dong_bo_base');
   if (c.file && st.dst) ch.push('day_file_base');
   if (c.office) ch.push('tao_office');
   if (isSet(st)) ch.push('thong_bao');
-  return {key:'tu_viec', label:'Ghép từ các việc đã bật', chain:ch.map(l => ({loai:l}))};
+  return {key:'tu_viec', label:'Ghép từ các việc đã bật', chain:ch.map(l => (typeof l === 'string' ? {loai:l} : l))};
 }
 const chainOf = (p, st) => st.chainCustom && st.chain ? {key:'rieng', label:'Chuỗi riêng', chain:st.chain} : derivedChain(p, st);
+// giống backend can_khi: AI đọc / lưu file của trường riêng thì không cần "Tải file" phía trước
+const needsSrc = x => !(x.tham_so && x.tham_so.tu) || String(x.tham_so.tu).split(',').some(t => ['', 'dang_xu_ly', 'goc', 'pdf'].includes(t.trim()));
+const FILE_SRC_TXT = {ai:'file AI đã đọc', goc:'file gốc', pdf:'bản PDF', dang_xu_ly:'file đang xử lý'};
+function chainParamNote(x){
+  const t = x.tham_so || {};
+  if (!t.tu || !['doc_ai', 'luu_drive'].includes(x.loai)) return '';
+  const src = String(t.tu).split(',').map(v => FILE_SRC_TXT[v.trim()] || fname(v.trim())).join(' + ');
+  return '<div class="small muted">' + (x.loai === 'doc_ai' ? 'Đọc riêng: ' : 'Lưu riêng: ') + esc(src) + (t.chon ? ' (' + esc(t.chon) + ')' : '') + (t.thu_muc ? ' → ' + esc(t.thu_muc) : '') + '</div>';
+}
 function chainCheck(chain){
   const have = new Set(), out = [];
   chain.forEach((x, i) => {
     const a = ACT[x.loai]; if (!a) { out.push('#' + (i + 1) + ' chức năng lạ "' + x.loai + '"'); return; }
     if (x.dieu_kien){ try { condCompile(x.dieu_kien); } catch (e) { out.push('#' + (i + 1) + ' ' + a[0] + ': ' + e.message); } }
     if (x.tat) return;
-    a[2].forEach(c => { if (!have.has(c)) out.push('#' + (i + 1) + ' ' + a[0] + ' cần "' + c + '" từ chức năng phía trước'); });
+    (needsSrc(x) ? a[2] : a[2].filter(c => c !== 'file_nguon')).forEach(c => { if (!have.has(c)) out.push('#' + (i + 1) + ' ' + a[0] + ' cần "' + c + '" từ chức năng phía trước'); });
     a[3].forEach(t => have.add(t));
   });
   return out;
@@ -1958,7 +2066,7 @@ function chainHTML(p, st){
   h += '<p class="help" style="margin-bottom:10px">' + (custom ? 'Chuỗi riêng của bước này (cột <span class="mono">chuc_nang</span>). Đổi thứ tự, tắt, thêm điều kiện cho từng chức năng.' : 'Suy ra từ các việc đã bật ở trên: <b>' + esc(r.label) + '</b>' + (r.key.startsWith('vt_') ? ' (mẫu <span class="mono">' + r.key + '</span>, giữ đúng cách Apps Script đang chạy)' : '') + '. Bật "Tự sắp chuỗi" để sửa.') + '</p>';
   h += '<ol class="chain">' + r.chain.map((x, i) => {
     const a = ACT[x.loai] || [x.loai, '?', [], [], 0];
-    let li = '<li class="' + (x.tat ? 'off' : '') + '"><span class="cn">' + (i + 1) + '</span><div class="cb"><div class="ct"><b>' + esc(a[0]) + '</b><span class="tag">' + esc(a[1]) + '</span>' + (a[4] ? '<span class="tag warn" title="Chạy lại sự kiện sẽ bỏ qua nếu đã làm">ghi ra ngoài</span>' : '') + (x.tat ? '<span class="tag">đang tắt</span>' : '') + '</div>';
+    let li = '<li class="' + (x.tat ? 'off' : '') + '"><span class="cn">' + (i + 1) + '</span><div class="cb"><div class="ct"><b>' + esc(a[0]) + '</b><span class="tag">' + esc(a[1]) + '</span>' + (a[4] ? '<span class="tag warn" title="Chạy lại sự kiện sẽ bỏ qua nếu đã làm">ghi ra ngoài</span>' : '') + (x.tat ? '<span class="tag">đang tắt</span>' : '') + '</div>' + chainParamNote(x);
     if (custom) li += '<input type="text" class="cond' + (x.dieu_kien && condErr(x.dieu_kien) ? ' bad' : '') + '" data-cb="cond" data-i="' + i + '" value="' + esc(x.dieu_kien || '') + '" placeholder="Chỉ chạy khi… VD: luong là giu_so và so_hieu trống" aria-label="Điều kiện chạy">';
     else if (x.dieu_kien) li += '<div class="small muted">Khi: ' + esc(x.dieu_kien) + '</div>';
     li += '</div>';
@@ -2699,8 +2807,8 @@ function capSummary(k, p, st){
   switch (k){
     case 'ten': return st.nameTpl ? ['', 'Tên: ' + cut(st.nameTpl, 70)] : ['warn', 'Chưa có mẫu tên phiếu'];
     case 'truong': return st.fields.length ? ['', st.fields.length + ' trường: ' + cut(st.fields.slice(0, 3).map(fname).join(', ') + (st.fields.length > 3 ? '…' : ''), 70)] : ['warn', 'Chưa chọn trường nào'];
-    case 'file': { const x = [st.src && 'lấy từ ' + fname(st.src), st.drive && 'cất vào ' + st.drive, st.dst && 'gửi vào ' + fname(st.dst)].filter(Boolean); return x.length ? ['', cut(x.join(' · '), 80)] : ['warn', 'Chưa chọn nơi lấy / cất / gửi file']; }
-    case 'ai': return !st.ai ? ['warn', 'Chưa chọn mẫu AI'] : (!st.src ? ['warn', 'Mẫu ' + st.ai + ' · chưa có file để đọc'] : ['', 'Mẫu: ' + st.ai]);
+    case 'file': { const x = [st.src && 'lấy từ ' + fname(st.src), st.drive && 'cất vào ' + st.drive, st.dst && 'gửi vào ' + fname(st.dst), st.src2 && 'lưu thêm ' + st.src2].filter(Boolean); return x.length ? ['', cut(x.join(' · '), 80)] : ['warn', 'Chưa chọn nơi lấy / cất / gửi file']; }
+    case 'ai': return !st.ai ? ['warn', 'Chưa chọn mẫu AI'] : (!st.src && !st.aiSrc ? ['warn', 'Mẫu ' + st.ai + ' · chưa có file để đọc'] : ['', 'Mẫu: ' + st.ai + (st.aiSrc && st.aiSrc !== st.src ? ' · đọc riêng ' + st.aiSrc : '')]);
     case 'office': return st.office ? ['', 'Đơn vị ' + st.office + (st.capso ? ' · có cấp số' : '')] : ['warn', 'Chưa chọn đơn vị Office'];
     case 'lt': return st.lt.length ? ['', st.lt.length + ' quy trình nhận: ' + cut(st.lt.map(t => t.proc).join(', '), 60)] : ['warn', 'Chưa có quy trình nhận'];
     case 'exec': return st.exec && st.exec.field && st.exec.user ? ['', 'ID từ ' + fname(st.exec.field) + ' · ' + st.exec.user] : ['warn', 'Chưa chọn trường ID / tài khoản'];
