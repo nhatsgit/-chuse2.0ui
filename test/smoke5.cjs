@@ -56,12 +56,12 @@ setTimeout(() => {
 setTimeout(() => {
   T('nhật ký: chạy lại bỏ qua việc đã làm, làm lại hết', () => {
     go('nhat-ky');
-    const n = qa('.logrow').length;
+    const n = qa('#logbody .logrow').length;
     click('[data-act="log"][data-i="0"]');
     if (!q('[data-act="replay"][data-all="0"]')) throw new Error('khong co nut chay lai');
     click('[data-act="replay"][data-all="0"]');
-    if (qa('.logrow').length !== n + 1) throw new Error('khong them dong');
-    if (!/Chạy lại lượt/.test(qa('.logrow')[0].textContent)) throw new Error(qa('.logrow')[0].textContent);
+    if (qa('#logbody .logrow').length !== n + 1) throw new Error('khong them dong');
+    if (!/Chạy lại lượt/.test(qa('#logbody .logrow')[0].textContent)) throw new Error(qa('#logbody .logrow')[0].textContent);
     click('[data-act="log"][data-i="0"]');
     if (!/Đã làm ở lần chạy trước/.test(q('#drawer-panel').textContent)) throw new Error('khong bo qua viec da lam');
     click('[data-act="replay"][data-all="1"]');

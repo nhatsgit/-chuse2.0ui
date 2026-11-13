@@ -563,6 +563,11 @@ input[type=text]:focus,select:focus,textarea:focus{outline:0;border-color:var(--
 .chain input.cond{font-size:12px}
 input.cond.bad{border-color:var(--bad);box-shadow:0 0 0 1px var(--bad)}
 @media (max-width:560px){.chain li{flex-wrap:wrap}.chain .cacts{width:100%;justify-content:flex-start}}
+.logrow .m{display:flex;flex-direction:column;gap:2px}
+.logrow .lsum{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+details.tech{margin-top:6px;border:1px solid var(--line);border-radius:9px;padding:8px 12px}
+details.tech summary{cursor:pointer;font-size:13px;color:var(--muted)}
+details.tech pre{margin:8px 0 0;font-family:var(--mono);font-size:12px;white-space:pre-wrap;overflow-wrap:anywhere}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -1331,19 +1336,6 @@ function viewDict(){
 }
 
 /* ================= nhật ký ================= */
-function viewLogs(){
-  const F = ['Tất cả', 'Lỗi', 'Cảnh báo', 'Thành công'], map = {'Lỗi':'err', 'Cảnh báo':'warn', 'Thành công':'ok'};
-  const list = LOGS.filter(l => state.lf === 'Tất cả' || l.s === map[state.lf]);
-  let h = '<div class="ck-ph"><div class="ck-ph-ico" aria-hidden="true">' + icon('log') + '</div><div class="ck-ph-chu"><h1>Nhật ký chạy</h1><p>Mỗi tín hiệu Base gửi về được ghi lại từng bước. Bấm một dòng để xem hệ thống đã làm gì và dừng ở đâu.</p></div></div>';
-  h += '<div class="ck-hang-loc"><div class="ck-loc" role="group" aria-label="Lọc theo kết quả">' + F.map(f => '<button class="chip" type="button" data-act="lf" data-v="' + f + '" aria-pressed="' + (state.lf === f) + '">' + f + '</button>').join('') + '</div></div>';
-  h += '<section class="card"><div>';
-  if (!list.length) h += '<div class="empty">Không có lượt chạy nào ở mục này.</div>';
-  list.forEach(l => {
-    const i = LOGS.indexOf(l), pill = l.s === 'err' ? '<span class="pill bad"><span class="dot"></span>Lỗi</span>' : (l.s === 'warn' ? '<span class="pill warn"><span class="dot"></span>Cảnh báo</span>' : '<span class="pill ok"><span class="dot"></span>Xong</span>');
-    h += '<button class="logrow" type="button" data-act="log" data-i="' + i + '"><span class="t">' + l.t + '</span><span class="p"><b>' + esc(l.p) + '</b><span class="small muted mono">phiếu ' + l.tk + '</span></span><span class="m">' + esc(l.m) + '</span><span class="d">' + pill + '</span></button>';
-  });
-  return h + '</div></section>';
-}
 
 /* ================= ngăn kéo: chạy thử, nhật ký, thêm quy trình ================= */
 let lastFocus = null;
@@ -1379,11 +1371,6 @@ function dryRun(){
   if (c.exec && st.exec) tr.push(st.exec.field && st.exec.user ? ['ok', 'Cho phiếu khác đi tiếp', 'ID lấy từ "' + fname(st.exec.field) + '" · tài khoản ' + st.exec.user] : ['err', 'Cho phiếu khác đi tiếp', 'Chưa chọn trường chứa ID hoặc tài khoản thực hiện']);
   if (st.chainCustom && st.chain) tr.push(['ok', 'Chuỗi riêng của bước', st.chain.filter(x => !x.tat).map(x => (ACT[x.loai] || [x.loai])[0] + (x.dieu_kien ? ' (khi ' + x.dieu_kien + ')' : '')).join(' → ')]);
   openDrawer('Chạy thử: ' + st.name, esc(p.name) + ' · không gửi gì lên Base', '<div class="note info" style="margin-bottom:16px">Chạy với dữ liệu mẫu ' + (state.long ? '"Rất dài"' : '"Thông thường"') + ', theo cấu hình đang sửa kể cả phần chưa xuất bản.</div>' + traceHTML(tr));
-}
-function showLog(i){
-  const l = LOGS[i], pr = P.find(p => p.name === l.p);
-  openDrawer(l.p, '<span class="mono">' + l.t + '</span> · khối <span class="mono">' + l.b + '</span> · phiếu <span class="mono">' + l.tk + '</span>',
-    '<p style="margin-bottom:16px">' + esc(l.m) + '</p>' + traceHTML(l.tr) + replayHTML(i) + (pr ? '<div class="inline" style="margin-top:6px"><button class="btn sm" type="button" data-act="open" data-pid="' + pr.id + '" data-si="' + Math.max(0, pr.steps.findIndex(s => s.block === l.b)) + '">Mở bước này</button></div>' : ''));
 }
 
 /* --- trình thêm quy trình từ link Base --- */
@@ -2266,6 +2253,94 @@ document.addEventListener('input', e => {
 });
 document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.id === 'r-sdate'){ e.preventDefault(); state.sdate = e.target.value; render(); } });
 document.addEventListener('focusout', e => { if (e.target.id === 'r-sdate' && state.sdate !== undefined){ setTimeout(render, 0); } });
+
+/* ---- nhật ký ghi rõ: tóm tắt, từng bước + thời gian, chỗ dừng, cách xử lý, lượt khác của phiếu ---- */
+function viewLogs(){
+  const F = [['Tất cả', ''], ['Lỗi', 'err'], ['Cảnh báo', 'warn'], ['Thành công', 'ok']];
+  const q = (state.lq || '').trim().toLowerCase(), pf = state.lp || '';
+  const base = LOGS.filter(l => (!pf || l.p === pf) && (!q || [l.p, l.tk, l.m, logStepName(l), l.tr.map(x => x[1] + ' ' + x[2]).join(' ')].join(' ').toLowerCase().includes(q)));
+  const cnt = k => base.filter(l => !k || l.s === k).length;
+  const cur = (F.find(f => f[0] === state.lf) || F[0])[1];
+  const list = base.filter(l => !cur || l.s === cur);
+  let h = '<div class="ck-ph"><div class="ck-ph-ico" aria-hidden="true">' + icon('log') + '</div><div class="ck-ph-chu"><h1>Nhật ký chạy</h1><p>Mỗi lần Base gửi tín hiệu là một lượt. Mỗi lượt ghi rõ quy trình, bước, phiếu, từng việc đã làm kèm thời gian, chỗ dừng và cách xử lý. Bấm một dòng để xem.</p></div></div>';
+  h += '<div class="ck-hang-loc"><label class="search">' + icon('search') + '<input type="text" id="lq" placeholder="Tìm số phiếu, quy trình, nội dung" value="' + esc(state.lq || '') + '" aria-label="Tìm trong nhật ký"></label>';
+  h += '<select id="lp" aria-label="Lọc theo quy trình" style="width:auto"><option value="">Mọi quy trình</option>' + Array.from(new Set(LOGS.map(l => l.p))).map(p => '<option' + (p === pf ? ' selected' : '') + '>' + esc(p) + '</option>').join('') + '</select>';
+  h += '<div class="ck-loc" role="group" aria-label="Lọc theo kết quả">' + F.map(f => '<button class="chip" type="button" data-act="lf" data-v="' + f[0] + '" aria-pressed="' + (state.lf === f[0]) + '">' + f[0] + ' <span class="small muted">' + cnt(f[1]) + '</span></button>').join('') + '</div></div>';
+  h += '<section class="card"><div id="logbody">' + logRows(list) + '</div></section>';
+  return h;
+}
+function logRows(list){
+  if (!list.length) return '<div class="empty">Không có lượt chạy nào khớp bộ lọc.</div>';
+  return list.map(l => {
+    const i = LOGS.indexOf(l), stop = l.s === 'err' ? logStop(l) : null;
+    return '<button class="logrow" type="button" data-act="log" data-i="' + i + '"><span class="t">' + l.t + '<br><span class="small">' + fmtMs(l.ms) + '</span></span>' +
+      '<span class="p"><b>' + esc(l.p) + '</b><span class="small muted">' + esc(logStepName(l)) + ' · phiếu <span class="mono">' + l.tk + '</span></span></span>' +
+      '<span class="m"><span class="lsum">' + esc(l.m) + '</span>' + (stop ? '<span class="small" style="color:var(--bad)">Dừng ở bước ' + stop.n + '/' + l.tr.length + ': ' + esc(stop.label) + '</span>' : '') + '</span>' +
+      '<span class="d">' + logPill(l.s) + '</span></button>';
+  }).join('');
+}
+const fmtMs = ms => ms >= 1000 ? (ms / 1000).toFixed(1) + ' giây' : (ms || 0) + ' ms';
+const logPill = s => s === 'err' ? '<span class="pill bad"><span class="dot"></span>Lỗi</span>' : s === 'warn' ? '<span class="pill warn"><span class="dot"></span>Cảnh báo</span>' : '<span class="pill ok"><span class="dot"></span>Xong</span>';
+function logStepName(l){ const pr = P.find(p => p.name === l.p); const st = pr && pr.steps.find(s => String(s.block) === String(l.b)); return st ? st.name : 'Khối ' + l.b; }
+function logStop(l){ const k = l.tr.findIndex(x => x[0] === 'err'); return k < 0 ? null : {n:k + 1, label:l.tr[k][1], detail:l.tr[k][2]}; }
+/** Thời gian từng bước: lấy từ bản ghi (phần tử thứ 4), không có thì chia tổng thời gian theo độ nặng của việc. */
+function logDur(l){
+  const w = l.tr.map(x => x[3] !== undefined || x[0] === 'skip' ? 0 : /AI|Office|Drive|file/i.test(x[1]) ? 6 : /Base|Đẩy|Kiểm lại/i.test(x[1]) ? 3 : 1);
+  const fixed = l.tr.reduce((a, x) => a + (x[3] || 0), 0), sum = w.reduce((a, b) => a + b, 0) || 1, rest = Math.max(0, (l.ms || 0) - fixed);
+  return l.tr.map((x, k) => x[3] !== undefined ? x[3] : x[0] === 'skip' ? 0 : Math.round(rest * w[k] / sum));
+}
+const LOG_HINTS = [
+  [/Luồng .* không khớp|không khớp lựa chọn/i, 'Giá trị luồng trên phiếu chưa có trong Quy tắc chung → Giá trị luồng. Thêm giá trị đó (hoặc từ đồng nghĩa) rồi bấm "Chạy lại".'],
+  [/Base từ chối|code 0|not editable/i, 'Base từ chối lệnh sửa phiếu. Thường do sai tên trường hoặc trường không sửa được ở bước này; xem thông báo của Base ở chi tiết kỹ thuật.'],
+  [/Office.*(từ chối|lỗi)|rút gọn/i, 'Tên văn bản vượt giới hạn của Office (500 byte) nên đã tự rút gọn. Muốn tên gọn hơn, rút mẫu tên ở bước này.'],
+  [/Tên phiếu dài|vượt 255/i, 'Tên phiếu dài hơn 255 ký tự nên đã tự cắt ở ranh giới từ. Nếu thường xuyên, rút gọn mẫu tên phiếu.'],
+  [/Gemini|AI.*(lỗi|quá tải)/i, 'Gemini quá tải hoặc hết hạn mức. Đợi vài phút rồi bấm "Chạy lại".'],
+  [/link.*hết hạn|không tải được/i, 'Link file của Base đã hết hạn. Bấm "Chạy lại" — hệ thống tự lấy link mới.']
+];
+function logHint(l){
+  if (l.goi_y) return l.goi_y;
+  if (l.s === 'ok') return '';
+  const txt = l.m + ' ' + l.tr.filter(x => x[0] !== 'ok').map(x => x[1] + ' ' + x[2]).join(' ');
+  const f = LOG_HINTS.find(x => x[0].test(txt));
+  return f ? f[1] : '';
+}
+function stepsHTML(l){
+  const ic = {ok:'check', warn:'alert', err:'x', skip:'minus'}, d = logDur(l);
+  return '<ol class="trace">' + l.tr.map((x, k) => '<li><span class="tdot ' + x[0] + '">' + icon(ic[x[0]]) + '</span><div><b>' + (k + 1) + '. ' + esc(x[1]) + ' <span class="small muted" style="display:inline;font-weight:400">· ' + fmtMs(d[k]) + '</span></b>' + (x[2] ? '<span>' + esc(x[2]) + '</span>' : '') + '</div></li>').join('') + '</ol>';
+}
+function showLog(i){
+  const l = LOGS[i], pr = P.find(p => p.name === l.p), stop = logStop(l), hint = logHint(l), sk = 'sk-261112-' + l.t.replace(/:/g, '') + '-' + l.tk.slice(-3);
+  const others = LOGS.map((x, k) => ({x, k})).filter(o => o.x.tk === l.tk && o.k !== i);
+  let b = '<div class="inline" style="margin-bottom:12px;flex-wrap:wrap;gap:6px">' + logPill(l.s) + '<span class="pill">' + esc(logStepName(l)) + '</span><span class="pill">' + l.tr.length + ' bước · ' + fmtMs(l.ms) + '</span></div>';
+  b += '<p style="margin-bottom:12px"><b>' + esc(l.m) + '</b></p>';
+  if (stop) b += '<div class="note bad" style="margin-bottom:10px">Dừng ở bước ' + stop.n + '/' + l.tr.length + ' «' + esc(stop.label) + '»' + (stop.detail ? ': ' + esc(stop.detail.replace(/[.s]+$/, '')) : '') + '. Các bước sau không chạy.</div>';
+  if (hint) b += '<div class="note info" style="margin-bottom:14px"><b>Cách xử lý:</b> ' + esc(hint) + '</div>';
+  b += stepsHTML(l);
+  b += '<details class="tech"><summary>Chi tiết kỹ thuật</summary><pre>' + esc(logTech(l, sk)) + '</pre></details>';
+  if (others.length) b += '<section class="card" style="margin-top:14px"><div class="card-h"><h2>Các lượt khác của phiếu ' + l.tk + '</h2></div><div>' + others.map(o => '<button class="logrow" type="button" data-act="log" data-i="' + o.k + '"><span class="t">' + o.x.t + '</span><span class="p"><b>' + esc(logStepName(o.x)) + '</b></span><span class="m">' + esc(o.x.m) + '</span><span class="d">' + logPill(o.x.s) + '</span></button>').join('') + '</div></section>';
+  b += replayHTML(i);
+  if (pr) b += '<div class="inline" style="margin-top:10px"><button class="btn sm" type="button" data-act="open" data-pid="' + pr.id + '" data-si="' + Math.max(0, pr.steps.findIndex(s => String(s.block) === String(l.b))) + '">Mở cấu hình bước này</button></div>';
+  openDrawer(l.p + ' · phiếu ' + l.tk, '<span class="mono">' + l.t + '</span> · khối <span class="mono">' + l.b + '</span> · sự kiện <span class="mono">' + sk + '</span>', b);
+}
+function logTech(l, sk){
+  const lines = ['su_kien_id: ' + sk, 'block_id: ' + l.b, 'root_id: ' + l.tk, 'thoi_luong_ms: ' + l.ms];
+  l.tr.forEach((x, k) => { if (/Base|Đẩy/.test(x[1])) lines.push('#' + (k + 1) + ' RESPONSE: ' + (x[0] === 'ok' ? '{"code":1,"message":"success"}' : '{"code":0,"message":"' + (x[2] || 'error') + '"}')); });
+  lines.push('code_version: node theo Apps Script 2026-11-04 + chuỗi chức năng');
+  return lines.join('\n');
+}
+LOGS.push(
+  {t:'08:51:30', p:'Văn thư đi_BHCK', b:34123, tk:'2768390', s:'warn', ms:2310, m:'Base từ chối cập nhật phiếu: trường service_so_ky_hieu_van_ban không sửa được ở bước này', tr:[
+    ['ok','Ghi trường từ Base vào sheet','Ghi 2 trường từ phiếu vào sheet', 15],['ok','Cấp số văn bản','Số 41/KH-BHCK (luồng Văn thư đi, ngày ban hành 12/11/2026) · STT 41 trong sổ 612', 40],
+    ['ok','Kiểm tra trùng số / sai thứ tự','Không trùng số, đúng thứ tự thời gian'],['ok','VT đi: đóng số vào tên file',"Đổi tên file dự thảo thành '41_KH_Ke hoach an toan.pdf'"],
+    ['warn','Đồng bộ phiếu lên Base','Base từ chối cập nhật phiếu: Field service_so_ky_hieu_van_ban is not editable at this stage'],['ok','Sắp xếp sheet + đánh lại STT','đã đúng thứ tự']]},
+  {t:'08:40:02', p:'Văn thư đến_BHCK', b:34020, tk:'2768201', s:'ok', ms:8840, m:'Mã đến 118/BHCK-2026, số 414/QĐ-CSVN — Về việc kiểm kê cuối năm', tr:[
+    ['ok','Ghi ô thông báo','⏳ AI đang bóc tách...'],['ok','Tải file từ Base',"Tải 'QD414.pdf' (212 KB) từ trường 'service_file_dau_vao'"],
+    ['ok','AI đọc văn bản',"AI đọc được: loai 'Quyết định', so '414/QĐ-CSVN', ngay '05/11/2026'"],['ok','VT đến: lập hồ sơ từ kết quả AI','Mã đến 118/BHCK-2026'],
+    ['ok','Bắn file vào trường Base',"Bắn 1 file vào trường 'service_vt_den_file_dau_vao_2'"],['ok','Đồng bộ phiếu lên Base','Đồng bộ 14 trường lên Base'],['skip','Lưu kho Base Office','Bước này không bật lưu kho Office']]}
+);
+LOGS.sort((a, b) => b.t.localeCompare(a.t));
+document.addEventListener('input', e => { if (e.target.id === 'lq'){ state.lq = e.target.value; render(); const el = $('#lq'); if (el){ el.focus(); el.setSelectionRange(el.value.length, el.value.length); } } });
+document.addEventListener('change', e => { if (e.target.id === 'lp'){ state.lp = e.target.value; render(); } });
 
 const INITIAL = snapshot(), INIT_ISSUES = JSON.stringify(state.issues);
 const restored = loadSaved();
