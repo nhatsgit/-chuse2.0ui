@@ -4,7 +4,7 @@
   "private": true,
   "description": "Giao diện điều khiển quy trình Base (bản mẫu, dữ liệu cứng)",
   "scripts": {
-    "test": "node test/smoke.cjs && node test/smoke3.cjs && node test/smoke4.cjs && node test/smoke5.cjs && node test/smoke6.cjs && node test/smoke7.cjs",
+    "test": "node test/smoke.cjs && node test/smoke3.cjs && node test/smoke4.cjs && node test/smoke5.cjs && node test/smoke6.cjs && node test/smoke7.cjs && node test/smoke8.cjs",
     "serve": "python -m http.server 8765 --bind 127.0.0.1"
   },
   "devDependencies": {

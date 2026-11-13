@@ -576,6 +576,26 @@ details.tech pre{margin:8px 0 0;font-family:var(--mono);font-size:12px;white-spa
 .wzsplit .tbl td:nth-child(2){min-width:220px}
 .fc-hook[data-chung]::after{content:"chung";position:absolute;top:2px;right:4px;font-size:9px;color:var(--muted)}
 .fc-hook{position:relative}
+/* thẻ việc + popup thiết lập */
+.cap{cursor:default;padding:0;align-items:stretch}
+.cap .sw{padding:12px 0 12px 12px;flex:none}
+.cap-b{flex:1;min-width:0;text-align:left;background:none;border:0;padding:10px 12px 10px 0;color:inherit;font:inherit;cursor:pointer;display:flex;flex-direction:column;gap:2px}
+.cap-b .d.warn{color:var(--warn)}
+.cap-go{font-size:12px;color:var(--accent-strong);font-weight:600;margin-top:4px}
+.cap-b:focus-visible,.cap-row:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:8px}
+.cap-row{width:100%;display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.cap-row:hover{border-color:var(--line-strong)}
+.cap-row b{display:block;font-weight:600;font-size:13px}
+.cap-row .d{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+.cm-bg{position:fixed;inset:0;background:var(--scrim);z-index:45;display:flex;align-items:center;justify-content:center;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.cm{width:min(760px,100%);max-height:min(88vh,100%);display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+.cm-h{display:flex;gap:12px;align-items:flex-start;padding:16px 18px 10px;border-bottom:1px solid var(--line)}
+.cm-h h2{font-size:16px;font-weight:600;margin:0}
+.cm-b{padding:14px 18px;overflow-y:auto;flex:1;min-height:0}
+.cm-b .cm-sec{display:flex;flex-direction:column;gap:12px}
+.cm-b .ed-sec{border:0;padding:0}
+.cm-f{display:flex;justify-content:space-between;gap:8px;padding:10px 18px 14px;border-top:1px solid var(--line)}
+@media (max-width:640px){.cm-bg{padding:0;align-items:flex-end}.cm{border-radius:14px 14px 0 0;max-height:92vh}}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -624,6 +644,7 @@ details.tech pre{margin:8px 0 0;font-family:var(--mono);font-size:12px;white-spa
   <div class="ck-noi"><main id="view"></main></div>
 </div>
 <div class="ck-man" id="ckMan"></div>
+<div id="capmodal" class="cm-bg" hidden><div class="cm" role="dialog" aria-modal="true" aria-labelledby="cm-title"><div class="cm-h"><div class="grow"><h2 id="cm-title"></h2><div class="small muted" id="cm-sub"></div></div><button class="btn ghost sm" type="button" data-act="capclose" aria-label="Đóng">✕</button></div><div class="cm-b" id="cm-body"></div><div class="cm-f"><button class="btn ghost sm" type="button" id="cm-off" data-act="capoff" data-k="">Tắt việc này</button><button class="btn primary" type="button" data-act="capclose">Xong</button></div></div></div>
 <div id="drawer" class="drawer-bg" hidden><aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="dr-title" id="drawer-panel"></aside></div>
 <div id="toast" class="toast" role="status" hidden></div>
 
@@ -1119,7 +1140,8 @@ function pickerList(p, st){
   return list.map(f => '<label class="pick"><input type="checkbox" data-pick="' + f[0] + '"' + (st.fields.includes(f[0]) ? ' checked' : '') + '><span>' + esc(f[1]) + '<small>' + esc(f[0]) + '</small>' + (OPTS_VT[f[0]] ? '<small>Lựa chọn: ' + esc(OPTS_VT[f[0]].slice(0, 4).join(' · ')) + (OPTS_VT[f[0]].length > 4 ? ' …' : '') + '</small>' : '') + '</span></label>').join('');
 }
 function capSec(k, title, body){
-  return '<section class="ed-sec" id="sec-' + k + '"><header><h3>' + title + '</h3><button class="btn ghost sm" type="button" data-act="capoff" data-k="' + k + '">Tắt việc này</button></header>' + body + '</section>';
+  CAPSEC[k] = {title, html:'<div class="cm-sec" id="sec-' + k + '">' + body + '</div>'};
+  return '';
 }
 function editorHTML(p, st){
   const c = st.caps;
@@ -1130,11 +1152,7 @@ function editorHTML(p, st){
   h += '<section class="ed-sec"><div class="row2"><div class="fld"><label for="f-sname">Tên bước</label><input type="text" id="f-sname" data-bind="name" value="' + esc(st.name) + '"></div>' +
        '<div class="fld"><label for="f-block">Block ID trên Base</label><input type="text" class="mono" id="f-block" data-bind="block" value="' + esc(st.block) + '"></div></div></section>';
   // bước này làm gì
-  h += '<section class="ed-sec"><header><h3>Bước này làm gì?</h3><span class="small muted">Bật việc cần làm, phần cài đặt sẽ hiện bên dưới</span></header><div class="caps">';
-  CAPS.forEach(cp => {
-    h += '<label class="cap' + (c[cp.k] ? ' on' : '') + '" for="cap-' + cp.k + '"><span class="sw"><input type="checkbox" id="cap-' + cp.k + '" data-cap="' + cp.k + '"' + (c[cp.k] ? ' checked' : '') + '><span></span></span><span><b>' + cp.t + '</b><span class="d">' + cp.d + '</span></span></label>';
-  });
-  h += '</div>';
+  h += '<section class="ed-sec"><header><h3>Bước này làm gì?</h3><span class="small muted">Bật việc cần làm, bấm vào việc để thiết lập</span></header>' + capCardsHTML(p, st);
   if (!isSet(st)) h += '<div class="note">Bước này chưa làm gì. Base vẫn gửi tín hiệu tới nhưng hệ thống bỏ qua.</div>';
   h += '</section>';
   if (c.ten){
@@ -1194,7 +1212,8 @@ function editorHTML(p, st){
     b += '<p class="help">Hệ thống gửi lại đủ các trường của bước đang chờ, nên Base không xoá trắng trường nào.</p>';
     h += capSec('exec', 'Cho phiếu khác đi tiếp', b);
   }
-  h += chainHTML(p, st);
+  CAPSEC.chain = {title:'Chuỗi chức năng sẽ chạy', html:chainHTML(p, st)};
+  h += chainRowHTML(p, st);
   return h + '</div>';
 }
 function railHTML(p){
@@ -1593,6 +1612,7 @@ function render(){
   else html = viewProcs();
   $('#crumb').textContent = crumb;
   $('#view').innerHTML = '<div class="work">' + html + '</div>';
+  capModalSync();
 }
 function rerenderEditor(){
   const p = curProc(), st = curStep(); if (!p || !st) return;
@@ -1600,6 +1620,7 @@ function rerenderEditor(){
   if (ed) ed.innerHTML = editorHTML(p, st);
   if (rail) rail.innerHTML = railHTML(p);
   const fd = $('#fcd'); if (fd){ const sl = fd.scrollLeft, stp = fd.scrollTop; fd.innerHTML = fcDetailInner(p); fd.scrollLeft = sl; fd.scrollTop = stp; }
+  capModalSync();
 }
 function route(){
   const h = location.hash.replace('#', '');
@@ -1642,7 +1663,7 @@ document.addEventListener('click', e => {
     case 'back': state.pid = null; render(); window.scrollTo(0, 0); break;
     case 'grp': state.grp = a.dataset.v; render(); break;
     case 'ptab': state.ptab = a.dataset.v; state.fsel = null; render(); break;
-    case 'step': state.si = +a.dataset.i; state.pickOpen = false; rerenderEditor(); if (innerWidth <= 900){ const ed = $('#editor'); if (ed) ed.scrollIntoView({block:'start'}); } break;
+    case 'step': state.capOpen = null; state.si = +a.dataset.i; state.pickOpen = false; rerenderEditor(); if (innerWidth <= 900){ const ed = $('#editor'); if (ed) ed.scrollIntoView({block:'start'}); } break;
     case 'flowgo': state.si = +a.dataset.i; state.ptab = 'cfg'; render(); break;
     case 'fview': state.fview = a.dataset.v; render(); break;
     case 'fcpick': {
@@ -1670,7 +1691,7 @@ document.addEventListener('click', e => {
       state.si = p.steps.length - 1; markDirty(p.id + ':add'); render(); break;
     }
     case 'capoff': st.caps[a.dataset.k] = false; markDirty(p.id + ':' + state.si + ':cap'); rerenderEditor(); break;
-    case 'needfile': st.caps.file = true; markDirty(p.id + ':' + state.si + ':cap'); rerenderEditor(); { const f = $('#f-src'); if (f){ f.focus(); f.scrollIntoView({block:'center'}); } } break;
+    case 'needfile': st.caps.file = true; markDirty(p.id + ':' + state.si + ':cap'); rerenderEditor(); openCap('file'); { const f = $('#f-src'); if (f) f.focus(); } break;
     case 'reviewed': st.copied = false; markDirty(p.id + ':' + state.si + ':rv'); rerenderEditor(); break;
     case 'sample': state.long = a.dataset.v === '1'; if (state.view === 'tu-dien') render(); else rerenderEditor(); break;
     case 'ins': {
@@ -1853,7 +1874,7 @@ document.addEventListener('change', e => {
     if (t.dataset.cap === 'exec' && t.checked && !st.exec) st.exec = {on:true, field:'', user:'', intent:'', from:'', to:''};
     if (st.exec) st.exec.on = !!st.caps.exec;
     markDirty(p.id + ':' + state.si + ':cap'); rerenderEditor();
-    if (t.checked){ const sec = $('#sec-' + t.dataset.cap); if (sec) sec.scrollIntoView({block:'nearest', behavior:'smooth'}); }
+    if (t.checked) openCap(t.dataset.cap); else if (state.capOpen === t.dataset.cap) closeCap();
     return;
   }
   if (t.dataset.pbind){
@@ -2674,6 +2695,74 @@ document.addEventListener('change', e => {
   if (t.dataset.wzg === 'bang'){ w.split.bang[t.dataset.k] = t.value.trim(); return; }
   if (t.dataset.wzg === 'bo'){ w.split.bo[t.dataset.k] = t.checked; renderWizard(); }
 });
+
+/* ---- thiết lập từng việc của bước trong popup (thay cho các mục xếp chồng bên dưới) ---- */
+const CAPSEC = {};
+function capSummary(k, p, st){
+  const cut = (s, n) => { s = String(s || ''); return s.length > n ? s.slice(0, n - 1) + '…' : s; };
+  switch (k){
+    case 'ten': return st.nameTpl ? ['', 'Tên: ' + cut(st.nameTpl, 70)] : ['warn', 'Chưa có mẫu tên phiếu'];
+    case 'truong': return st.fields.length ? ['', st.fields.length + ' trường: ' + cut(st.fields.slice(0, 3).map(fname).join(', ') + (st.fields.length > 3 ? '…' : ''), 70)] : ['warn', 'Chưa chọn trường nào'];
+    case 'file': { const x = [st.src && 'lấy từ ' + fname(st.src), st.drive && 'cất vào ' + st.drive, st.dst && 'gửi vào ' + fname(st.dst)].filter(Boolean); return x.length ? ['', cut(x.join(' · '), 80)] : ['warn', 'Chưa chọn nơi lấy / cất / gửi file']; }
+    case 'ai': return !st.ai ? ['warn', 'Chưa chọn mẫu AI'] : (!st.src ? ['warn', 'Mẫu ' + st.ai + ' · chưa có file để đọc'] : ['', 'Mẫu: ' + st.ai]);
+    case 'office': return st.office ? ['', 'Đơn vị ' + st.office + (st.capso ? ' · có cấp số' : '')] : ['warn', 'Chưa chọn đơn vị Office'];
+    case 'lt': return st.lt.length ? ['', st.lt.length + ' quy trình nhận: ' + cut(st.lt.map(t => t.proc).join(', '), 60)] : ['warn', 'Chưa có quy trình nhận'];
+    case 'exec': return st.exec && st.exec.field && st.exec.user ? ['', 'ID từ ' + fname(st.exec.field) + ' · ' + st.exec.user] : ['warn', 'Chưa chọn trường ID / tài khoản'];
+  }
+  return ['', ''];
+}
+function capCardsHTML(p, st){
+  const c = st.caps;
+  return '<div class="caps">' + CAPS.map(cp => {
+    const on = !!c[cp.k], sm = on ? capSummary(cp.k, p, st) : null;
+    return '<div class="cap' + (on ? ' on' : '') + '"><label class="sw" for="cap-' + cp.k + '" title="' + (on ? 'Tắt' : 'Bật') + ' việc này"><input type="checkbox" id="cap-' + cp.k + '" data-cap="' + cp.k + '"' + (on ? ' checked' : '') + ' aria-label="' + (on ? 'Tắt ' : 'Bật ') + esc(cp.t) + '"><span></span></label>' +
+      '<button type="button" class="cap-b" data-act="capopen" data-k="' + cp.k + '"><b>' + cp.t + '</b>' +
+      (on ? '<span class="d' + (sm[0] ? ' warn' : '') + '">' + (sm[0] ? '⚠ ' : '') + esc(sm[1]) + '</span><span class="cap-go">Thiết lập ›</span>' : '<span class="d">' + cp.d + '</span>') + '</button></div>';
+  }).join('') + '</div>';
+}
+function chainRowHTML(p, st){
+  const r = chainOf(p, st), n = r.chain.filter(x => !x.tat).length, warn = chainCheck(r.chain).length;
+  return '<section class="ed-sec"><button type="button" class="cap-row" data-act="capopen" data-k="chain"><span><b>Chuỗi chức năng sẽ chạy</b><span class="d">' + n + ' chức năng · ' + esc(r.key === 'rieng' ? 'chuỗi riêng của bước' : r.label) + (warn ? ' · <span style="color:var(--warn)">⚠ ' + warn + ' cảnh báo</span>' : '') + '</span></span><span class="cap-go">Xem / sửa ›</span></button></section>';
+}
+function openCap(k){
+  const st = curStep(); if (!st) return;
+  if (!$('#capmodal').hidden && state.capOpen === k) return;
+  state.capFrom = document.activeElement;
+  state.capOpen = k; capModalSync(true);
+}
+function closeCap(){
+  if (!state.capOpen) return;
+  state.capOpen = null; $('#capmodal').hidden = true; $('#cm-body').innerHTML = '';
+  const back = $('[data-act="capopen"][data-k="' + (state.capLast || '') + '"]');
+  if (back) back.focus(); else if (state.capFrom && state.capFrom.focus) state.capFrom.focus();
+}
+function capModalSync(focus){
+  const m = $('#capmodal'); if (!m) return;
+  const k = state.capOpen, p = curProc(), st = curStep();
+  if (!k || !p || !st || state.view !== 'quy-trinh' || (k !== 'chain' && !st.caps[k]) || !CAPSEC[k]){ m.hidden = true; state.capOpen = null; $('#cm-body').innerHTML = ''; return; }
+  state.capLast = k;
+  const body = $('#cm-body'), top = body.scrollTop;
+  $('#cm-title').textContent = CAPSEC[k].title;
+  $('#cm-sub').textContent = p.name + ' · bước "' + (st.name || 'chưa đặt tên') + '"';
+  body.innerHTML = CAPSEC[k].html;
+  $('#cm-off').hidden = k === 'chain';
+  $('#cm-off').dataset.k = k;
+  m.hidden = false;
+  body.scrollTop = top;
+  if (focus){ const f = body.querySelector('input:not([type=checkbox]),select,textarea,button'); if (f) f.focus(); }
+}
+document.addEventListener('click', e => {
+  const a = e.target.closest('[data-act]');
+  if (e.target.id === 'capmodal'){ closeCap(); return; }
+  if (!a) return;
+  if (a.dataset.act === 'capopen'){
+    const p = curProc(), st = curStep(), k = a.dataset.k;
+    if (k !== 'chain' && !st.caps[k]){ st.caps[k] = true; if (k === 'exec' && !st.exec) st.exec = {on:true, field:'', user:'', intent:'', from:'', to:''}; markDirty(p.id + ':' + state.si + ':cap'); rerenderEditor(); }
+    openCap(k);
+  }
+  if (a.dataset.act === 'capclose') closeCap();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && state.capOpen){ e.stopPropagation(); closeCap(); } }, true);
 
 const INITIAL = snapshot(), INIT_ISSUES = JSON.stringify(state.issues);
 const restored = loadSaved();

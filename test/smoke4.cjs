@@ -12,6 +12,7 @@ const T = (name, fn) => { try { fn(); console.log('OK   ' + name); } catch (e) {
 const card = id => qa('.wzh').find(c => c.querySelector('[data-id="' + id + '"]'));
 const P = () => { const v = d.createElement('script'); v.textContent = 'window.__P = P;'; d.body.appendChild(v); return w.__P; };
 
+const capOpen = k => { const b = d.querySelector('[data-act="capopen"][data-k="' + k + '"]'); if (!b) throw new Error('khong co the viec ' + k); b.dispatchEvent(new w.MouseEvent('click', { bubbles: true })); };
 setTimeout(() => {
   T('mo trinh: buoc 1 co 5 dich vu thu', () => { click('[data-act="wizard"]'); if (qa('[data-act="wztry"]').length !== 5) throw new Error(qa('[data-act="wztry"]').length); });
   T('link khong co mau -> bao loi', () => { q('#wz-link').value = 'https://service.base.vn/services/12345'; click('[data-act="wzread"]'); if (!/chưa có lưu đồ của dịch vụ 12345/.test(q('#drawer-panel').textContent)) throw new Error('khong bao'); });
@@ -55,6 +56,7 @@ setTimeout(() => {
     if (q('#f-on') && q('#f-on').checked) throw new Error('dang bat');
     click(steps.find(b => /51151/.test(b.textContent)));
     if (!q('#cap-ai').checked || !q('#cap-file').checked || !q('#cap-truong').checked) throw new Error('caps');
+    capOpen('truong');
     if (qa('#fchips .fchip').length !== 7) throw new Error('truong ' + qa('#fchips .fchip').length);
   });
   T('so do: bam webhook da cau hinh -> mo cau hinh ben phai, doi viec -> o so do cap nhat', () => {

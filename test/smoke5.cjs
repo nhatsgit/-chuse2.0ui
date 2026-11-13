@@ -21,7 +21,7 @@ setTimeout(() => {
     openP('vti-bhck');
     const n = qa('#rail [data-act="step"][data-i]').length;
     let found = -1;
-    for (let i = 0; i < n && found < 0; i++){ click('[data-act="step"][data-i="' + i + '"]'); if (/vt_di_cap_so/.test(q('#sec-chain').textContent)) found = i; }
+    for (let i = 0; i < n && found < 0; i++){ click('[data-act="step"][data-i="' + i + '"]'); click('[data-act="capopen"][data-k="chain"]'); if (/vt_di_cap_so/.test(q('#sec-chain').textContent)) found = i; }
     if (found < 0) throw new Error('khong co buoc cap so');
     if (qa('#sec-chain .chain li').length !== 9) throw new Error('so chuc nang ' + qa('#sec-chain .chain li').length);
   });

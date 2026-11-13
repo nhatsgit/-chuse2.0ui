@@ -11,6 +11,7 @@ const change = (el, v) => { if (!el) throw new Error('khong thay phan tu'); if (
 const T = (name, fn) => { try { fn(); console.log('OK   ' + name); } catch (e) { console.log('FAIL ' + name + ' -> ' + e.message); errs.push(name); } };
 const stepByName = re => qa('#rail .step').find(b => re.test(b.textContent));
 
+const capOpen = k => { const b = d.querySelector('[data-act="capopen"][data-k="' + k + '"]'); if (!b) throw new Error('khong co the viec ' + k); b.dispatchEvent(new w.MouseEvent('click', { bubbles: true })); };
 setTimeout(() => {
   T('them quy trinh: man 2 hien dich cu + so truong', () => {
     click('[data-act="wizard"]'); click('[data-act="wzread"]');
@@ -21,7 +22,7 @@ setTimeout(() => {
   T('man 2: 50329 nhan 16 truong sau buoc 2.1', () => { const li = qa('.wzh').find(l => /50329/.test(l.textContent)); if (!li || !/Sau: 2.1_VT ĐẾN_Xử lý văn thư đến/.test(li.textContent) || !/16 trường nhập/.test(li.textContent)) throw new Error(li ? li.textContent : 'khong co dong'); });
   T('man 3 co o tu dien truong (mac dinh bat)', () => { click('[data-act="wznext"]'); if (!q('#wz-auto') || !q('#wz-auto').checked) throw new Error('khong co/khong bat'); });
   T('tao quy trinh', () => { click('[data-act="wzcreate"]'); if (!/Văn thư BHVN/.test(q('#crumb').textContent)) throw new Error(q('#crumb').textContent); });
-  T('buoc 50329 da tu dien 16 truong', () => { click(stepByName(/50329/)); const n = qa('#fchips .fchip').length; if (n !== 16) throw new Error('so truong ' + n); });
+  T('buoc 50329 da tu dien 16 truong', () => { click(stepByName(/50329/)); capOpen('truong'); const n = qa('#fchips .fchip').length; if (n !== 16) throw new Error('so truong ' + n); });
   T('dau buoc hien "Gui ve Apps Script cu"', () => { if (!/Gửi về Apps Script cũ/.test(q('#editor .ed-h').textContent)) throw new Error('khong thay'); });
   T('goi y Base: bo 2 truong roi dung lai 16', () => {
     click(q('#fchips [data-act="rmfield"]')); click(q('#fchips [data-act="rmfield"]'));
@@ -30,7 +31,7 @@ setTimeout(() => {
     if (!/Còn 2 trường chưa chọn/.test(q('#sec-truong').textContent)) throw new Error('khong bao thieu: ' + q('#sec-truong .note').textContent);
     click('[data-act="basefields"]'); if (qa('#fchips .fchip').length !== 16) throw new Error('khong ve 16');
   });
-  T('bo chon truong hien lua chon lay tu Base', () => { click('[data-act="picker"]'); if (!/Lựa chọn: Văn thư đến · Văn thư đi · Xin giữ số · Chèn số \/ Bù số/.test(q('#picklist').textContent)) throw new Error('khong thay lua chon'); click('[data-act="picker"]'); });
+  T('bo chon truong hien lua chon lay tu Base', () => { capOpen('truong'); click('[data-act="picker"]'); if (!/Lựa chọn: Văn thư đến · Văn thư đi · Xin giữ số · Chèn số \/ Bù số/.test(q('#picklist').textContent)) throw new Error('khong thay lua chon'); click('[data-act="picker"]'); });
   T('chay thu canh bao dich cu', () => { click('[data-act="dry"]'); const first = q('.trace li'); if (!first || !/Apps Script cũ/.test(first.textContent)) throw new Error('khong canh bao'); click('[data-act="close"]'); });
   T('luu do: 10/10 khoi con gui ve cu', () => { click('[data-act="ptab"][data-v="flow"]'); if (!/10\/10 khối webhook còn gửi về Apps Script cũ/.test(q('#view').textContent)) throw new Error('khong thay'); const cu = qa('#fcd .fc-hook .ep').filter(e => /Apps Script cũ/.test(e.textContent)).length; if (cu !== 10) throw new Error('nhan ' + cu); });
   T('huong dan chuyen: danh dau 3 khoi -> con 7', () => {
