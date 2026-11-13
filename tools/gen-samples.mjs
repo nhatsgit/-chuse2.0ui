@@ -25,8 +25,10 @@ for (const id of IDS) {
     svc: f.svc, name: f.name, blocks: f.blocks, fields: f.fieldCount, counts: f.counts, first: f.firstBlockId,
     warn: f.warnings,
     tree: f.tree.map((x) => { const o = { t: x.t, n: x.n, d: x.d }; if (x.id) o.id = x.id; if (x.br) o.br = x.br; if (x.warn) o.warn = 1; if (x.par) o.par = 1; return o; }),
-    hooks: f.hooks.map((h) => ({ id: h.id, n: h.name, br: h.branch, from: h.from, via: h.via, f: h.fields, ff: h.fileFields, ep: h.endpoint, epl: h.endpointLabel, data: h.data, sg: h.suggest })),
+    hooks: f.hooks.map((h) => ({ id: h.id, n: h.name, br: h.branch, from: h.from, via: h.via, f: h.fields, ff: h.fileFields, ep: h.endpoint, epl: h.endpointLabel, data: h.data, sg: h.suggest, cs: h.cases || [] })),
     fn: fieldName,
+    // chỗ rẽ nhánh để tách thành nhiều quy trình (xem base-backend/src/base/split.js)
+    split: { switches: (f.split ? f.split.switches : []).map((s) => ({ id: s.id, name: s.name, tang: s.tang, tach_duoc: s.tach_duoc, trong_nhanh: s.trong_nhanh, cases: s.cases.map((c) => ({ id: c.id, name: c.name, mac_dinh: c.mac_dinh, cond: c.cond.map((g) => g.map((x) => ({ field: x.field, fieldName: x.fieldName, op: x.op, v: x.v }))) })) })) },
   };
   console.log(id, f.name, "webhook", f.hooks.length, "khối trên sơ đồ", f.tree.length);
 }
