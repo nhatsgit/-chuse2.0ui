@@ -596,6 +596,16 @@ details.tech pre{margin:8px 0 0;font-family:var(--mono);font-size:12px;white-spa
 .cm-b .ed-sec{border:0;padding:0}
 .cm-f{display:flex;justify-content:space-between;gap:8px;padding:10px 18px 14px;border-top:1px solid var(--line)}
 @media (max-width:640px){.cm-bg{padding:0;align-items:flex-end}.cm{border-radius:14px 14px 0 0;max-height:92vh}}
+/* hộp thoại */
+.dlg-bg{z-index:55}
+.dlg{width:min(560px,100%)}
+.dlg .cm-b p{margin:0;line-height:1.5}
+.dlg-err{margin:0 18px 10px}
+.btn.danger{background:var(--bad);border-color:var(--bad);color:#fff}
+.btn.danger:hover{filter:brightness(1.08)}
+.pubgrp{display:flex;flex-direction:column;gap:10px;max-height:260px;overflow-y:auto;padding:10px 12px;border:1px solid var(--line);border-radius:10px}
+.pubgrp b{font-size:13px}
+.pubgrp ul{margin:4px 0 0 18px;padding:0;font-size:13px;color:var(--muted)}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -644,6 +654,7 @@ details.tech pre{margin:8px 0 0;font-family:var(--mono);font-size:12px;white-spa
   <div class="ck-noi"><main id="view"></main></div>
 </div>
 <div class="ck-man" id="ckMan"></div>
+<div id="dlg" class="cm-bg dlg-bg" hidden><div class="cm dlg" role="dialog" aria-modal="true" aria-labelledby="dlg-title"><div class="cm-h"><div class="grow"><h2 id="dlg-title"></h2><div class="small muted" id="dlg-sub"></div></div><button class="btn ghost sm" type="button" data-act="dlgclose" aria-label="Đóng">✕</button></div><div class="cm-b" id="dlg-body"></div><div class="dlg-err note bad" id="dlg-err" role="alert" hidden></div><div class="cm-f"><button class="btn ghost" type="button" id="dlg-cancel" data-act="dlgclose">Huỷ</button><button class="btn primary" type="button" id="dlg-ok" data-act="dlgok">Đồng ý</button></div></div></div>
 <div id="capmodal" class="cm-bg" hidden><div class="cm" role="dialog" aria-modal="true" aria-labelledby="cm-title"><div class="cm-h"><div class="grow"><h2 id="cm-title"></h2><div class="small muted" id="cm-sub"></div></div><button class="btn ghost sm" type="button" data-act="capclose" aria-label="Đóng">✕</button></div><div class="cm-b" id="cm-body"></div><div class="cm-f"><button class="btn ghost sm" type="button" id="cm-off" data-act="capoff" data-k="">Tắt việc này</button><button class="btn primary" type="button" data-act="capclose">Xong</button></div></div></div>
 <div id="drawer" class="drawer-bg" hidden><aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="dr-title" id="drawer-panel"></aside></div>
 <div id="toast" class="toast" role="status" hidden></div>
@@ -1310,7 +1321,7 @@ function viewDetail(p){
   h += '<div class="inline"><label class="small muted" for="f-engine">Loại xử lý</label><select id="f-engine" data-pbind="e" style="width:auto">' + Object.keys(TYPES).map(k => '<option value="' + k + '"' + (k === p.e ? ' selected' : '') + '>' + TYPES[k][0] + '</option>').join('') + '</select>';
   h += '<label class="small muted" for="f-mode">Chế độ</label><select id="f-mode" data-pbind="mode" style="width:auto">' + Object.keys(MODES).map(k => '<option value="' + k + '"' + (k === (p.mode || 'that') ? ' selected' : '') + '>' + MODES[k] + '</option>').join('') + '</select>';
   h += '<label class="inline small" for="f-on"><span class="sw"><input type="checkbox" id="f-on" data-pbind="on"' + (p.on ? ' checked' : '') + '><span></span></span>' + (p.on ? 'Đang bật' : 'Đang tắt') + '</label><button class="btn sm" type="button" data-act="dupproc">Nhân bản</button><button class="btn ghost sm" type="button" data-act="askdelproc">Xoá</button></div></div>';
-  h += modePanelHTML(p);
+  h += modeRowHTML(p);
   if (state.confirm === 'proc:' + p.id) h += confirmBox('Xoá quy trình "' + esc(p.name) + '" và toàn bộ ' + p.steps.length + ' bước cấu hình? Dịch vụ trên Base không bị ảnh hưởng.', 'delproc', 'Xoá quy trình');
   h += '<div class="ptabs" role="tablist"><button class="ptab" role="tab" type="button" data-act="ptab" data-v="cfg" aria-selected="' + (state.ptab === 'cfg') + '">Cấu hình từng bước</button><button class="ptab" role="tab" type="button" data-act="ptab" data-v="flow" aria-selected="' + (state.ptab === 'flow') + '">Lưu đồ trên Base</button></div>';
   if (state.ptab === 'flow'){
@@ -1685,11 +1696,7 @@ document.addEventListener('click', e => {
       toast(moi.length || mat.length ? 'Đối chiếu Base: ' + moi.length + ' khối webhook chưa cấu hình' + (moi.length ? ' (' + moi.slice(0, 3).map(x => x.n).join(', ') + (moi.length > 3 ? '…' : '') + ')' : '') + ', ' + mat.length + ' bước không còn trên Base.' : 'Đối chiếu Base: khớp, không có khối mới hay khối bị xoá.');
       break;
     }
-    case 'addstep': {
-      const last = p.steps[p.steps.length - 1];
-      p.steps.push(mk({name:'Bước mới', block:(last ? +last.block : p.svc) + 1}));
-      state.si = p.steps.length - 1; markDirty(p.id + ':add'); render(); break;
-    }
+    case 'addstep': askAddStep(p); break;
     case 'capoff': st.caps[a.dataset.k] = false; markDirty(p.id + ':' + state.si + ':cap'); rerenderEditor(); break;
     case 'needfile': st.caps.file = true; markDirty(p.id + ':' + state.si + ':cap'); rerenderEditor(); openCap('file'); { const f = $('#f-src'); if (f) f.focus(); } break;
     case 'reviewed': st.copied = false; markDirty(p.id + ':' + state.si + ':rv'); rerenderEditor(); break;
@@ -1757,25 +1764,25 @@ document.addEventListener('click', e => {
       const r = document.querySelector('input[name="wz-type"]:checked'); if (r) w.type = r.value;
       w.copy = ($('#wz-copy') || {}).value || ''; const au = $('#wz-auto'); w.auto = au ? au.checked : true; wizCreate(); break;
     }
-    case 'publish': {
+    case 'publish': publishReview(note => {
       const n = state.dirty.size, last = state.versions[state.versions.length - 1];
-      state.versions.push({n:(last ? last.n : 0) + 1, at:nowStr(), count:n, snap:snapshot()});
+      state.versions.push({n:(last ? last.n : 0) + 1, at:nowStr(), count:n, snap:snapshot(), note});
       state.dirty.clear(); updateDraft(); persist();
-      toast('Đã xuất bản phiên bản ' + state.versions[state.versions.length - 1].n + ' với ' + n + ' thay đổi. Xem hoặc quay lại ở "Lịch sử phiên bản".'); break;
-    }
+      toast('Đã xuất bản phiên bản ' + state.versions[state.versions.length - 1].n + ' với ' + n + ' thay đổi. Xem hoặc quay lại ở "Lịch sử phiên bản".');
+    }); break;
     case 'history': {
       const vs = state.versions.slice().reverse();
       openDrawer('Lịch sử phiên bản', 'Mỗi lần xuất bản lưu thành một phiên bản. Khôi phục đưa cấu hình cũ vào bản nháp để xem lại trước khi xuất bản.',
-        '<ul class="hooks">' + vs.map((v, k) => '<li><span style="flex:1;min-width:0"><b>Phiên bản ' + v.n + '</b>' + (k === 0 ? ' <span class="pill ok">Đang chạy</span>' : '') + '<span class="small muted" style="display:block">' + esc(v.at) + ' · ' + (v.count ? v.count + ' thay đổi' : 'cấu hình ban đầu') + '</span></span>' + (k === 0 ? '' : '<button class="btn sm" type="button" data-act="restore" data-n="' + v.n + '">Khôi phục</button>') + '</li>').join('') + '</ul>' +
+        '<ul class="hooks">' + vs.map((v, k) => '<li><span style="flex:1;min-width:0"><b>Phiên bản ' + v.n + '</b>' + (k === 0 ? ' <span class="pill ok">Đang chạy</span>' : '') + '<span class="small muted" style="display:block">' + esc(v.at) + ' · ' + (v.count ? v.count + ' thay đổi' : 'cấu hình ban đầu') + (v.note ? ' · ' + esc(v.note) : '') + '</span></span>' + (k === 0 ? '' : '<button class="btn sm" type="button" data-act="restore" data-n="' + v.n + '">Khôi phục</button>') + '</li>').join('') + '</ul>' +
         (state.versions.length < 2 ? '<p class="help" style="margin-top:12px">Chưa có phiên bản cũ nào để quay lại. Mỗi lần bấm "Xuất bản cấu hình" sẽ tạo thêm một phiên bản.</p>' : '') +
         (state.dirty.size ? '<div class="note" style="margin-top:12px">Bạn đang có ' + state.dirty.size + ' thay đổi chưa xuất bản. Khôi phục sẽ thay chúng bằng cấu hình của phiên bản được chọn.</div>' : ''));
       break;
     }
-    case 'restore': {
-      const v = state.versions.find(x => String(x.n) === a.dataset.n); if (!v) break;
+    case 'restore': { const vn = a.dataset.n; askRestore(vn, () => {
+      const v = state.versions.find(x => String(x.n) === vn); if (!v) return;
       applySnap(v.snap); if (!curProc()) state.pid = null; state.si = 0; state.confirm = null;
-      markDirty('restore:' + v.n); closeDrawer(); render(); toast('Đã đưa cấu hình phiên bản ' + v.n + ' vào bản nháp. Bấm "Xuất bản cấu hình" để áp dụng.'); break;
-    }
+      markDirty('restore:' + v.n); closeDrawer(); render(); toast('Đã đưa cấu hình phiên bản ' + v.n + ' vào bản nháp. Bấm "Xuất bản cấu hình" để áp dụng.');
+    }); break; }
     case 'basefields': st.fields = st.baseFields.slice(); st.caps.truong = true; markDirty(p.id + ':' + state.si + ':fields'); rerenderEditor(); toast('Đã dùng ' + st.fields.length + ' trường theo Base'); break;
     case 'migrate': openDrawer('Chuyển webhook sang hệ thống mới', esc(p.name) + ' · dịch vụ ' + p.svc, migrateHTML(p)); break;
     case 'copyurl': {
@@ -1793,34 +1800,23 @@ document.addEventListener('click', e => {
       toast(k ? 'Đã xác nhận ' + k + ' khối gửi về hệ thống mới' + (left ? ', còn ' + left + ' khối gửi về Apps Script cũ.' : '. Đã chuyển xong.') : 'Chưa đánh dấu khối nào đã đổi trên Base.');
       break;
     }
-    case 'askdelstep': state.confirm = 'step:' + state.si; rerenderEditor(); break;
+    case 'askdelstep': askDelStep(p, st); break;
     case 'delstep': {
       const nm = st.name; p.steps.splice(state.si, 1); state.si = Math.max(0, state.si - 1); state.confirm = null;
       markDirty(p.id + ':del:' + nm); render(); toast('Đã xoá bước "' + nm + '" trong bản nháp'); break;
     }
-    case 'askdelproc': state.confirm = 'proc:' + p.id; render(); break;
+    case 'askdelproc': askDelProc(p); break;
     case 'delproc': {
       const nm = p.name; P.splice(P.indexOf(p), 1); state.pid = null; state.confirm = null;
       markDirty('delproc:' + nm); render(); toast('Đã xoá quy trình "' + nm + '" trong bản nháp'); break;
     }
     case 'nocancel': state.confirm = null; render(); break;
-    case 'dupproc': {
-      const c = JSON.parse(JSON.stringify(p)); c.id = p.id + '-' + Date.now().toString(36); c.name = p.name + ' (bản sao)'; c.on = false;
-      P.splice(P.indexOf(p) + 1, 0, c); state.pid = c.id; state.si = 0; markDirty(c.id + ':new'); render();
-      toast('Đã nhân bản thành "' + c.name + '". Bản sao đang tắt; đổi tên và Block ID cho quy trình mới.'); break;
-    }
-    case 'reset': {
-      const lbl = a.querySelector('span');
-      if (!state.resetArm){
-        state.resetArm = true; if (lbl) lbl.textContent = 'Bấm lần nữa để đặt lại';
-        setTimeout(() => { state.resetArm = false; const b = $('#reset-btn span'); if (b) b.textContent = 'Đặt lại dữ liệu mẫu'; }, 4000);
-        break;
-      }
-      state.resetArm = false; if (lbl) lbl.textContent = 'Đặt lại dữ liệu mẫu';
+    case 'dupproc': askDupProc(p); break;
+    case 'reset': askReset(() => {
       applySnap(INITIAL); state.issues = JSON.parse(INIT_ISSUES); state.dirty = new Set(); state.versions = [{n:1, at:nowStr(), count:0, snap:INITIAL}];
       state.pid = null; state.si = 0; state.confirm = null; try { localStorage.removeItem(STORE_KEY); } catch (err) {}
-      updateDraft(); closeDrawer(); go('quy-trinh'); toast('Đã đặt lại toàn bộ dữ liệu mẫu'); break;
-    }
+      updateDraft(); closeDrawer(); go('quy-trinh'); toast('Đã đặt lại toàn bộ dữ liệu mẫu');
+    }); break;
   }
 });
 document.getElementById('drawer').addEventListener('click', e => { if (e.target.id === 'drawer') closeDrawer(); });
@@ -2763,6 +2759,200 @@ document.addEventListener('click', e => {
   if (a.dataset.act === 'capclose') closeCap();
 });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && state.capOpen){ e.stopPropagation(); closeCap(); } }, true);
+
+/* ---- hộp thoại dùng chung: xác nhận, nhập nhanh, xem lại trước khi xuất bản ---- */
+/**
+ * dialog({ title, sub, body, okLabel, danger, cancelLabel, onOk(dlgBody) -> false|string để giữ mở (string = lỗi hiện ra), okDisabled })
+ */
+function dialog(o){
+  const m = $('#dlg');
+  state.dlg = o; state.dlgFrom = document.activeElement;
+  $('#dlg-title').textContent = o.title;
+  $('#dlg-sub').textContent = o.sub || '';
+  $('#dlg-sub').hidden = !o.sub;
+  $('#dlg-body').innerHTML = o.body || '';
+  $('#dlg-err').textContent = ''; $('#dlg-err').hidden = true;
+  const ok = $('#dlg-ok');
+  ok.textContent = o.okLabel || 'Đồng ý';
+  ok.className = 'btn ' + (o.danger ? 'danger' : 'primary');
+  ok.disabled = !!o.okDisabled;
+  $('#dlg-cancel').textContent = o.cancelLabel || 'Huỷ';
+  m.hidden = false;
+  const f = $('#dlg-body').querySelector('input:not([type=checkbox]),textarea,select');
+  (f || (o.danger ? $('#dlg-cancel') : ok)).focus();
+  if (f && f.select && f.type === 'text') f.select();
+}
+function dialogClose(){
+  const m = $('#dlg'); if (m.hidden) return;
+  m.hidden = true; $('#dlg-body').innerHTML = '';
+  const back = state.dlgFrom; state.dlg = null;
+  if (back && back.isConnected && back.focus) back.focus();
+}
+function dialogOk(){
+  const o = state.dlg; if (!o) return;
+  const r = o.onOk ? o.onOk($('#dlg-body')) : true;
+  if (r === false) return;
+  if (typeof r === 'string'){ $('#dlg-err').textContent = r; $('#dlg-err').hidden = false; return; }
+  dialogClose();
+}
+
+/* -- xoá bước / quy trình, đặt lại, khôi phục -- */
+function askDelStep(p, st){
+  dialog({title:'Xoá bước "' + (st.name || 'chưa đặt tên') + '"?', sub:p.name, danger:true, okLabel:'Xoá bước',
+    body:'<p>Bước bị xoá khỏi cấu hình (bản nháp). Khối <span class="mono">' + esc(st.block) + '</span> trên Base vẫn còn; tín hiệu Base gửi từ khối này sẽ bị bỏ qua.</p>' + (isSet(st) ? '<p class="help" style="margin-top:8px">Bước đang làm: ' + CAPS.filter(c => st.caps[c.k]).map(c => esc(c.t)).join(', ') + '.</p>' : ''),
+    onOk(){ const nm = st.name, i = p.steps.indexOf(st); p.steps.splice(i, 1); state.si = Math.max(0, i - 1); state.capOpen = null; markDirty(p.id + ':del:' + nm); render(); toast('Đã xoá bước "' + nm + '" trong bản nháp'); }});
+}
+function askDelProc(p){
+  dialog({title:'Xoá quy trình "' + p.name + '"?', danger:true, okLabel:'Xoá quy trình',
+    body:'<p>Xoá quy trình cùng <b>' + p.steps.length + ' bước</b> cấu hình khỏi bản nháp. Dịch vụ ' + p.svc + ' trên Base không bị ảnh hưởng; sau khi xuất bản, tín hiệu từ các khối của quy trình này sẽ bị bỏ qua.</p>' +
+      (p.on ? '<div class="note" style="margin-top:10px">Quy trình đang <b>bật</b> — phiếu đang chạy sẽ không được xử lý tiếp.</div>' : '') +
+      '<div class="fld" style="margin-top:12px"><label for="dlg-confirm">Gõ <b>xoá</b> để xác nhận</label><input type="text" id="dlg-confirm" autocomplete="off"></div>',
+    onOk(b){ if (b.querySelector('#dlg-confirm').value.trim().toLowerCase() !== 'xoá' && b.querySelector('#dlg-confirm').value.trim().toLowerCase() !== 'xoa') return 'Gõ "xoá" vào ô để xác nhận.';
+      const nm = p.name; P.splice(P.indexOf(p), 1); state.pid = null; markDirty('delproc:' + nm); render(); toast('Đã xoá quy trình "' + nm + '" trong bản nháp'); }});
+}
+function askReset(doReset){
+  dialog({title:'Đặt lại dữ liệu mẫu?', danger:true, okLabel:'Đặt lại',
+    body:'<p>Mọi thứ đã sửa trên trình duyệt này sẽ mất: ' + (state.dirty.size ? '<b>' + state.dirty.size + ' thay đổi chưa xuất bản</b>, ' : '') + (state.versions.length > 1 ? (state.versions.length - 1) + ' phiên bản đã xuất bản, ' : '') + 'quy tắc chung và nhật ký chạy thử. Trang trở về dữ liệu mẫu ban đầu.</p>',
+    onOk(){ doReset(); }});
+}
+function askRestore(n, doRestore){
+  const v = state.versions.find(x => String(x.n) === String(n)); if (!v) return;
+  dialog({title:'Khôi phục phiên bản ' + v.n + '?', sub:v.at + (v.note ? ' · ' + v.note : ''), okLabel:'Đưa vào bản nháp',
+    body:'<p>Cấu hình của phiên bản ' + v.n + ' được chép vào <b>bản nháp</b>; cấu hình đang chạy chưa đổi cho tới khi bạn xuất bản.</p>' + (state.dirty.size ? '<div class="note" style="margin-top:10px">Bạn đang có <b>' + state.dirty.size + ' thay đổi chưa xuất bản</b>. Chúng sẽ bị thay bằng phiên bản ' + v.n + '.</div>' : ''),
+    onOk(){ doRestore(); }});
+}
+
+/* -- thêm bước, nhân bản -- */
+function askAddStep(p){
+  const used = new Set(p.steps.map(s => String(s.block)));
+  const last = p.steps[p.steps.length - 1], guess = String((last ? +last.block : p.svc) + 1);
+  const hint = p.sampleSvc && SAMPLES[p.sampleSvc] ? SAMPLES[p.sampleSvc].hooks.filter(h => !used.has(String(h.id))) : [];
+  dialog({title:'Thêm bước', sub:p.name + ' · dịch vụ ' + p.svc, okLabel:'Thêm bước',
+    body:(hint.length ? '<div class="fld"><label for="dlg-hook">Khối webhook trên Base chưa có bước</label><select id="dlg-hook"><option value="">Tự nhập Block ID…</option>' + hint.map(h => '<option value="' + h.id + '" data-n="' + esc(h.n) + '">' + esc(h.n) + ' · ' + h.id + '</option>').join('') + '</select></div>' : '') +
+      '<div class="row2" style="margin-top:10px"><div class="fld"><label for="dlg-sname">Tên bước</label><input type="text" id="dlg-sname" value="Bước mới"></div><div class="fld"><label for="dlg-block">Block ID trên Base</label><input type="text" id="dlg-block" class="mono" inputmode="numeric" value="' + (hint.length ? '' : guess) + '"></div></div>' +
+      '<p class="help" style="margin-top:8px">Block ID là số của khối "Webhook ra" trên lưu đồ Base. Mỗi khối chỉ gắn với một bước.</p>',
+    onOk(b){
+      const name = b.querySelector('#dlg-sname').value.trim(), block = b.querySelector('#dlg-block').value.trim();
+      if (!name) return 'Nhập tên bước.';
+      if (!/^\d{3,}$/.test(block)) return 'Block ID phải là số (VD 51151).';
+      if (used.has(block)) return 'Block ID ' + block + ' đã có bước "' + p.steps.find(s => String(s.block) === block).name + '".';
+      const other = P.find(x => x !== p && x.steps.some(s => String(s.block) === block));
+      if (other && !b.dataset.ok){ b.dataset.ok = '1'; return 'Block ID ' + block + ' đang thuộc quy trình "' + other.name + '". Bấm "Thêm bước" lần nữa nếu đây là webhook dùng chung có điều kiện.'; }
+      p.steps.push(mk({name, block:+block}));
+      state.si = p.steps.length - 1; markDirty(p.id + ':add'); render(); toast('Đã thêm bước "' + name + '". Bấm vào các việc để thiết lập.');
+    }});
+  const sel = $('#dlg-hook');
+  if (sel) sel.addEventListener('change', () => { const o = sel.selectedOptions[0]; if (sel.value){ $('#dlg-block').value = sel.value; $('#dlg-sname').value = o.dataset.n; } });
+}
+function askDupProc(p){
+  dialog({title:'Nhân bản quy trình', sub:p.name, okLabel:'Nhân bản',
+    body:'<div class="fld"><label for="dlg-pname">Tên quy trình mới</label><input type="text" id="dlg-pname" value="' + esc(p.name + ' (bản sao)') + '"></div>' +
+      '<div class="fld" style="margin-top:10px"><label for="dlg-psvc">Mã dịch vụ trên Base</label><input type="text" id="dlg-psvc" class="mono" value="' + esc(p.svc) + '"></div>' +
+      '<p class="help" style="margin-top:8px">Bản sao chép đủ ' + p.steps.length + ' bước và đang <b>tắt</b>. Nếu dùng cho dịch vụ khác, sửa Block ID từng bước cho khớp lưu đồ mới.</p>',
+    onOk(b){
+      const name = b.querySelector('#dlg-pname').value.trim(), svc = b.querySelector('#dlg-psvc').value.trim();
+      if (!name) return 'Nhập tên quy trình.';
+      if (P.some(x => x.name === name)) return 'Đã có quy trình tên "' + name + '".';
+      if (!/^\d{3,}$/.test(svc)) return 'Mã dịch vụ phải là số.';
+      const c = JSON.parse(JSON.stringify(p)); c.id = p.id + '-' + Date.now().toString(36); c.name = name; c.svc = +svc; c.on = false;
+      P.splice(P.indexOf(p) + 1, 0, c); state.pid = c.id; state.si = 0; markDirty(c.id + ':new'); render();
+      toast('Đã nhân bản thành "' + name + '" (đang tắt).');
+    }});
+}
+
+/* -- chế độ chạy: chọn bóng / chuyển tiếp -> hộp thoại giải thích + địa chỉ Apps Script -- */
+const MODE_HELP = {
+  that:'Hệ thống mới xử lý thật, không chuyển tiếp nữa. Chọn khi chạy bóng đã khớp đủ lâu.',
+  bong:'Hệ thống mới chạy trước nhưng <b>không ghi</b> Base, sheet, Drive, Office; ghi lại các trường định ghi rồi chuyển gói tin cho Apps Script xử lý thật. 10 phút sau đọc phiếu thật để so khớp / lệch.',
+  chuyen_tiep:'Base gửi về hệ thống mới, hệ thống chỉ lưu lại rồi chuyển nguyên gói tin sang Apps Script, trả lời Base đúng câu Apps Script trả. Dùng để đổi địa chỉ webhook trên Base <b>một lần</b> cho mọi khối.'
+};
+function askMode(p, mode){
+  const need = mode !== 'that';
+  dialog({title:'Chế độ chạy: ' + MODES[mode], sub:p.name, okLabel:'Áp dụng',
+    body:'<p>' + MODE_HELP[mode] + '</p>' + (need ? '<div class="fld" style="margin-top:12px"><label for="dlg-fw">Địa chỉ Apps Script cũ của quy trình này</label><input type="text" id="dlg-fw" class="mono" value="' + esc(p.fwUrl || '') + '" placeholder="https://script.google.com/macros/s/…/exec"></div><p class="help" style="margin-top:6px">Lấy từ khối webhook trên Base đang gửi tới (xem tab "Lưu đồ trên Base").</p>' : ''),
+    onOk(b){
+      if (need){
+        const u = b.querySelector('#dlg-fw').value.trim();
+        if (!/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec/.test(u)) return 'Cần địa chỉ Apps Script dạng https://script.google.com/macros/s/…/exec — thiếu địa chỉ thì Base gửi về mà không ai xử lý thật.';
+        p.fwUrl = u;
+      }
+      p.mode = mode; markDirty(p.id + ':mode'); render(); toast('Đã đặt "' + p.name + '": ' + MODES[mode]);
+    }});
+}
+function modeRowHTML(p){
+  const m = p.mode || 'that';
+  if (m === 'that') return '';
+  let d = esc(MODES[m]) + ' · ' + (p.fwUrl ? 'chuyển tiếp tới Apps Script …' + esc(p.fwUrl.split('/s/')[1] ? p.fwUrl.split('/s/')[1].slice(-12) : '') : '<span style="color:var(--bad)">chưa có địa chỉ Apps Script</span>');
+  if (m === 'bong'){ const s = shadowStats(p); d += ' · <span style="color:var(--ok)">' + s.khop + ' khớp</span>' + (s.lech ? ' · <span style="color:var(--warn)">' + s.lech + ' lệch</span>' : ''); }
+  return '<div class="inline" style="margin-bottom:14px;gap:8px;flex-wrap:wrap"><button type="button" class="cap-row" data-act="modeset" style="flex:1;min-width:240px"><span><b>Đang chuyển dần khỏi Apps Script</b><span class="d">' + d + '</span></span><span class="cap-go">Thiết lập ›</span></button>' +
+    (m === 'bong' && shadowStats(p).lech ? '<button class="btn sm" type="button" data-act="shadowview">Xem chỗ lệch</button>' : '') + '</div>';
+}
+
+/* -- xuất bản: xem lại thay đổi + kiểm tra + ghi chú -- */
+const DIRTY_WHAT = {name:'tên bước', block:'Block ID', cap:'việc của bước', chain:'chuỗi chức năng', fields:'trường lưu', content:'mẫu nội dung', on:'bật / tắt', mode:'chế độ chạy', fwUrl:'địa chỉ Apps Script', e:'loại xử lý', rv:'đã kiểm cấu hình chép', add:'thêm bước', 'new':'quy trình mới', nameRef:'mẫu tên phiếu', contentRef:'mẫu nội dung', drive:'thư mục Drive', src:'nơi lấy file', dst:'nơi gửi file', ai:'mẫu AI', office:'đơn vị Office', capso:'cấp số'};
+function dirtyLines(){
+  const groups = new Map();
+  const add = (g, t) => { if (!groups.has(g)) groups.set(g, new Set()); groups.get(g).add(t); };
+  for (const k of state.dirty){
+    const parts = k.split(':');
+    if (parts[0] === 'delproc'){ add('Quy trình đã xoá', parts.slice(1).join(':')); continue; }
+    if (parts[0] === 'dict'){ add('Từ điển', (DTABS.find(t => t.k === parts[1]) || {label:parts[1]}).label); continue; }
+    if (parts[0] === 'rules'){ add('Quy tắc chung', {vaitro:'Vai trò trường', luong:'Giá trị luồng', so:'Quy tắc số', lich:'Lịch chạy'}[parts[1]] || parts[1]); continue; }
+    if (parts[0] === 'restore'){ add('Khôi phục', 'đưa phiên bản ' + parts[1] + ' vào bản nháp'); continue; }
+    const p = procById(parts[0]);
+    const g = p ? p.name : parts[0];
+    if (parts.length === 2) add(g, DIRTY_WHAT[parts[1]] || parts[1]);
+    else if (parts[1] === 'del') add(g, 'xoá bước "' + parts.slice(2).join(':') + '"');
+    else if (parts[1] === 'ep') add(g, 'xác nhận khối đã chuyển webhook');
+    else { const st = p && p.steps[+parts[1]]; add(g, (st ? 'bước "' + st.name + '": ' : '') + (DIRTY_WHAT[parts[2]] || parts.slice(2).join(':').split('.')[0])); }
+  }
+  return groups;
+}
+function publishChecks(){
+  const err = [], warn = [];
+  P.forEach(p => {
+    if ((p.mode === 'bong' || p.mode === 'chuyen_tiep') && !p.fwUrl) err.push(p.name + ': chế độ "' + MODES[p.mode] + '" nhưng chưa có địa chỉ Apps Script');
+    if (p.on && unset(p)) warn.push(p.name + ': đang bật nhưng còn ' + unset(p) + ' bước chưa làm gì');
+    p.steps.forEach(st => { if (st.chainCustom && st.chain){ const c = chainCheck(st.chain); c.filter(x => /lạ|không hiểu/.test(x)).forEach(x => err.push(p.name + ' · ' + st.name + ': ' + x)); c.filter(x => !/lạ|không hiểu/.test(x)).forEach(x => warn.push(p.name + ' · ' + st.name + ': ' + x)); } });
+  });
+  RULES.lich.forEach(l => { const e = condErr(l.dieu_kien); if (e) err.push('Lịch "' + l.ten + '": điều kiện ' + e); });
+  RULES.so.forEach(r => { if (String(r.mau).indexOf('{so}') < 0) err.push('Quy tắc số ' + (r.qt === '*' ? 'chung' : ((procById(r.qt) || {}).name || r.qt)) + ': mẫu số thiếu {so}'); });
+  RULES.luong.forEach((r, i) => { if (!String(r.gia_tri).trim()) warn.push('Giá trị luồng dòng ' + (i + 1) + ' đang trống'); });
+  return {err, warn};
+}
+function publishReview(doPublish){
+  const groups = dirtyLines(), chk = publishChecks();
+  let body = '<p class="help" style="margin-bottom:10px">' + state.dirty.size + ' thay đổi sẽ thành phiên bản ' + ((state.versions[state.versions.length - 1] || {n:0}).n + 1) + '. Cấu hình đang chạy đổi ngay khi bấm xuất bản.</p>';
+  body += '<div class="pubgrp">' + Array.from(groups).map(([g, set]) => '<div><b>' + esc(g) + '</b><ul>' + Array.from(set).slice(0, 12).map(t => '<li>' + esc(t) + '</li>').join('') + (set.size > 12 ? '<li class="muted">và ' + (set.size - 12) + ' thay đổi khác</li>' : '') + '</ul></div>').join('') + '</div>';
+  if (chk.err.length) body += '<div class="note bad" style="margin-top:12px"><b>' + chk.err.length + ' lỗi phải sửa trước khi xuất bản</b><ul style="margin:6px 0 0 18px">' + chk.err.slice(0, 8).map(x => '<li>' + esc(x) + '</li>').join('') + '</ul></div>';
+  if (chk.warn.length) body += '<div class="note" style="margin-top:10px"><b>' + chk.warn.length + ' cảnh báo</b> (vẫn xuất bản được)<ul style="margin:6px 0 0 18px">' + chk.warn.slice(0, 8).map(x => '<li>' + esc(x) + '</li>').join('') + '</ul></div>';
+  if (!chk.err.length && !chk.warn.length) body += '<div class="note ok" style="margin-top:12px">Kiểm tra xong, không thấy lỗi.</div>';
+  body += '<div class="fld" style="margin-top:12px"><label for="dlg-note">Ghi chú cho phiên bản này</label><input type="text" id="dlg-note" placeholder="VD: tách kho thành 6 quy trình, sửa mẫu tên văn thư đi"></div>';
+  dialog({title:'Xem lại trước khi xuất bản', okLabel:chk.err.length ? 'Sửa lỗi trước' : 'Xuất bản', okDisabled:!!chk.err.length, body,
+    onOk(b){ doPublish(b.querySelector('#dlg-note').value.trim()); }});
+}
+
+document.addEventListener('click', e => {
+  if (e.target.id === 'dlg'){ dialogClose(); return; }
+  const a = e.target.closest('[data-act]'); if (!a) return;
+  if (a.dataset.act === 'dlgok') dialogOk();
+  else if (a.dataset.act === 'dlgclose') dialogClose();
+  else if (a.dataset.act === 'modeset'){ const p = curProc(); if (p) askMode(p, p.mode || 'that'); }
+});
+document.addEventListener('keydown', e => {
+  if ($('#dlg').hidden) return;
+  if (e.key === 'Escape'){ e.stopPropagation(); e.preventDefault(); dialogClose(); }
+  else if (e.key === 'Enter' && e.target.tagName === 'INPUT' && e.target.closest('#dlg')){ e.preventDefault(); dialogOk(); }
+}, true);
+// chọn chế độ bóng / chuyển tiếp -> hỏi trước (không áp ngay)
+document.addEventListener('change', e => {
+  const t = e.target; if (t.id !== 'f-mode') return;
+  const p = curProc(); if (!p) return;
+  e.stopImmediatePropagation();
+  const want = t.value; t.value = p.mode || 'that';
+  if (want === (p.mode || 'that')) return;
+  askMode(p, want);
+}, true);
 
 const INITIAL = snapshot(), INIT_ISSUES = JSON.stringify(state.issues);
 const restored = loadSaved();

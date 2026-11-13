@@ -46,11 +46,15 @@ setTimeout(() => {
   T('về chuỗi suy ra', () => { click('[data-act="ch-reset"]'); if (q('#ch-custom').checked) throw new Error('van custom'); });
   T('chế độ chạy bóng: chưa khai URL -> cảnh báo; khai URL -> số khớp/lệch, xem chỗ lệch', () => {
     change('#f-mode', 'bong');
-    if (!/Chưa khai địa chỉ Apps Script/.test(q('#view').textContent)) throw new Error('khong canh bao url');
-    change('#f-fw', 'https://script.google.com/macros/s/XYZ/exec');
-    if (!/lượt khớp/.test(q('#view').textContent)) throw new Error('khong co thong ke');
+    if (q('#dlg').hidden || !/không ghi/.test(q('#dlg-body').textContent)) throw new Error('khong hoi truoc khi doi che do');
+    if (q('#f-mode').value !== 'that') throw new Error('doi che do truoc khi xac nhan');
+    click('#dlg-ok'); if (q('#dlg-err').hidden || !/địa chỉ Apps Script/.test(q('#dlg-err').textContent)) throw new Error('khong chan khi thieu url');
+    q('#dlg-fw').value = 'https://script.google.com/macros/s/XYZ/exec'; click('#dlg-ok');
+    if (!q('#dlg').hidden) throw new Error('khong dong');
+    if (!/khớp/.test(q('#view').textContent)) throw new Error('khong co thong ke');
     const b = q('[data-act="shadowview"]'); if (b){ click(b); if (!/So sánh chạy bóng/.test(q('#drawer-panel').textContent)) throw new Error('drawer'); click('[data-act="close"]'); }
-    change('#f-mode', 'chuyen_tiep'); if (!/một lần/.test(q('#view').textContent)) throw new Error('chuyen tiep');
+    change('#f-mode', 'chuyen_tiep'); if (!/một lần/.test(q('#dlg-body').textContent)) throw new Error('chuyen tiep');
+    click('#dlg-ok'); if (!/Chỉ chuyển tiếp/.test(q('#view').textContent)) throw new Error('khong ap dung');
   });
 }, 60);
 setTimeout(() => {

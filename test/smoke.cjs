@@ -31,7 +31,7 @@ later(50, () => {
   T('bat cho phieu khac di tiep', () => { change(q('#cap-exec'), true); if (!q('#f-exfield')) throw new Error('khong co o'); change(q('#f-exfield'), 'service_so_phieu'); });
   T('chay thu buoc', () => { click('[data-act="dry"]'); if (q('#drawer').hidden) throw new Error('khong mo'); if (d.querySelectorAll('.trace li').length < 5) throw new Error('it buoc'); click('[data-act="close"]'); });
   T('tab luu do', () => { click('[data-act="ptab"][data-v="flow"]'); if (!q('#fcd .fc-node')) throw new Error('trong'); click('[data-act="fview"][data-v="ds"]'); if (!q('.flow .fl')) throw new Error('danh sach trong'); click('[data-act="fview"][data-v="sd"]'); click('[data-act="ptab"][data-v="cfg"]'); });
-  T('them buoc', () => { const n = d.querySelectorAll('#rail .step').length; click('[data-act="addstep"]'); if (d.querySelectorAll('#rail .step').length !== n + 1) throw new Error('khong them'); });
+  T('them buoc', () => { const n = d.querySelectorAll('#rail .step').length; click('[data-act="addstep"]'); if (q('#dlg').hidden) throw new Error('khong hoi'); q('#dlg-block').value = 'abc'; click('#dlg-ok'); if (q('#dlg-err').hidden) throw new Error('khong bat block sai'); q('#dlg-block').value = '99999'; q('#dlg-sname').value = 'Bước thử'; click('#dlg-ok'); if (d.querySelectorAll('#rail .step').length !== n + 1) throw new Error('khong them'); if (!/Bước thử/.test(q('#editor h2').textContent)) throw new Error('sai ten'); });
   T('lien thong o BC thong minh', () => { click('[data-act="back"]'); click('tr[data-pid="bc-tm-crck2"]'); click('[data-act="step"][data-i="1"]'); capOpen('lt'); if (!q('#sec-lt')) throw new Error('khong co muc'); click('[data-act="addlt"]'); });
   T('can sua -> mo dung buoc', () => { click('[data-act="back"]'); click('.alert [data-act="open"]'); if (!/Văn thư đi_BHCK/.test(q('#crumb').textContent)) throw new Error(q('#crumb').textContent); if (!/Cấp số/.test(q('#editor h2').textContent)) throw new Error(q('#editor h2').textContent); });
   T('them quy trinh: link sai bao loi', () => { click('[data-act="back"]'); click('[data-act="wizard"]'); q('#wz-link').value = 'abc'; click('[data-act="wzread"]'); if (!/Không thấy mã dịch vụ/.test(q('#drawer-panel').textContent)) throw new Error('khong bao'); });
@@ -52,7 +52,7 @@ later(3600, () => {
 });
 later(4200, () => {
   T('nhat ky: loc loi + mo chi tiet + mo buoc', () => { click('[data-act="lf"][data-v="Lỗi"]'); if (d.querySelectorAll('.logrow').length !== 1) throw new Error('loc'); click('.logrow'); if (q('#drawer').hidden) throw new Error('khong mo'); click('#drawer-panel [data-act="open"]'); if (!q('#editor')) throw new Error('khong mo buoc'); });
-  T('xuat ban xoa ban nhap', () => { click('#publish'); if (!/Không có thay đổi/.test(q('#draft-pill').textContent)) throw new Error(q('#draft-pill').textContent); });
+  T('xuat ban xoa ban nhap', () => { click('#publish'); if (q('#dlg-ok').disabled) throw new Error('bi chan: ' + q('#dlg-body').textContent.slice(0, 300)); click('#dlg-ok'); if (!/Không có thay đổi/.test(q('#draft-pill').textContent)) throw new Error(q('#draft-pill').textContent); });
   T('doi giao dien', () => { click('[data-act="theme"]'); if (!d.documentElement.dataset.theme) throw new Error('khong doi'); });
   console.log(errs.length ? '\nLOI: ' + errs.join(' | ') : '\nTAT CA DEU CHAY, KHONG CO LOI');
 });

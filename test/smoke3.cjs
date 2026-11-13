@@ -45,18 +45,25 @@ setTimeout(() => {
   T('Nhap vat tu: da chuyen het', () => { click('[data-act="back"]'); click('tr[data-pid="kho-nhap-vt"]'); click('[data-act="ptab"][data-v="flow"]'); if (!/khối webhook đã gửi về hệ thống mới/.test(q('#view').textContent)) throw new Error('khong thay'); click('[data-act="ptab"][data-v="cfg"]'); });
   T('xoa buoc: hoi lai, huy, roi xoa that', () => {
     const n = qa('#rail .step').length; click('[data-act="step"][data-i="2"]');
-    click('[data-act="askdelstep"]'); if (!q('[data-act="delstep"]')) throw new Error('khong hoi lai');
-    click('[data-act="nocancel"]'); if (qa('#rail .step').length !== n) throw new Error('huy ma van xoa');
-    click('[data-act="askdelstep"]'); click('[data-act="delstep"]'); if (qa('#rail .step').length !== n - 1) throw new Error('khong xoa');
+    click('[data-act="askdelstep"]'); if (q('#dlg').hidden || !/Xoá bước/.test(q('#dlg-title').textContent)) throw new Error('khong hoi lai');
+    click('#dlg-cancel'); if (!q('#dlg').hidden || qa('#rail .step').length !== n) throw new Error('huy ma van xoa');
+    click('[data-act="askdelstep"]'); click('#dlg-ok'); if (qa('#rail .step').length !== n - 1) throw new Error('khong xoa');
   });
-  T('nhan ban quy trinh', () => { click('[data-act="dupproc"]'); if (!/bản sao/.test(q('#crumb').textContent)) throw new Error(q('#crumb').textContent); });
-  T('xoa quy trinh ban sao', () => { click('[data-act="askdelproc"]'); click('[data-act="delproc"]'); if (q('tr[data-pid*="kho-nhap-vt-"]')) throw new Error('van con'); });
+  T('nhan ban quy trinh', () => { click('[data-act="dupproc"]'); if (q('#dlg').hidden) throw new Error('khong hoi ten'); click('#dlg-ok'); if (!/bản sao/.test(q('#crumb').textContent)) throw new Error(q('#crumb').textContent); });
+  T('xoa quy trinh ban sao: phai go "xoá"', () => {
+    click('[data-act="askdelproc"]'); click('#dlg-ok'); if (q('#dlg').hidden || q('#dlg-err').hidden) throw new Error('khong bat go xac nhan');
+    q('#dlg-confirm').value = 'xoá'; click('#dlg-ok'); if (q('tr[data-pid*="kho-nhap-vt-"]')) throw new Error('van con');
+  });
   T('luu ban nhap tren trinh duyet', () => { const raw = w.localStorage.getItem('base-dieu-khien-mau-v3'); if (!raw) throw new Error('chua luu'); const dd = JSON.parse(raw); if (!dd.dirty.length) throw new Error('khong co thay doi'); if (!JSON.parse(dd.snap).P.some(p => p.name === 'Văn thư BHVN')) throw new Error('khong co quy trinh moi'); });
-  T('xuat ban -> phien ban 2', () => { click('#publish'); click('[data-act="history"]'); if (!/Phiên bản 2/.test(q('#drawer-panel').textContent) || !/Phiên bản 1/.test(q('#drawer-panel').textContent)) throw new Error('lich su'); });
-  T('khoi phuc phien ban 1 bo quy trinh moi', () => { click('[data-act="restore"][data-n="1"]'); if (P_has(/Văn thư BHVN/)) throw new Error('van con quy trinh moi'); if (!/thay đổi chưa xuất bản/.test(q('#draft-pill').textContent)) throw new Error('khong vao ban nhap'); });
-  T('dat lai du lieu mau (bam 2 lan)', () => {
-    click('[data-act="reset"]'); if (!/Bấm lần nữa/.test(q('#reset-btn').textContent)) throw new Error('khong hoi lai');
-    click('[data-act="reset"]'); if (qa('#ptbody tr.row').length !== 15) throw new Error('so quy trinh ' + qa('#ptbody tr.row').length);
+  T('xuat ban -> xem lai thay doi + ghi chu -> phien ban 2', () => {
+    click('#publish'); if (q('#dlg').hidden || !/Xem lại trước khi xuất bản/.test(q('#dlg-title').textContent)) throw new Error('khong xem lai');
+    if (!/Văn thư BHVN/.test(q('#dlg-body').textContent)) throw new Error('khong liet ke thay doi');
+    q('#dlg-note').value = 'thêm văn thư BHVN'; click('#dlg-ok'); click('[data-act="history"]');
+    if (!/thêm văn thư BHVN/.test(q('#drawer-panel').textContent)) throw new Error('khong hien ghi chu'); if (!/Phiên bản 2/.test(q('#drawer-panel').textContent) || !/Phiên bản 1/.test(q('#drawer-panel').textContent)) throw new Error('lich su'); });
+  T('khoi phuc phien ban 1 bo quy trinh moi', () => { click('[data-act="restore"][data-n="1"]'); if (!/Khôi phục phiên bản 1/.test(q('#dlg-title').textContent)) throw new Error('khong hoi'); click('#dlg-ok'); if (P_has(/Văn thư BHVN/)) throw new Error('van con quy trinh moi'); if (!/thay đổi chưa xuất bản/.test(q('#draft-pill').textContent)) throw new Error('khong vao ban nhap'); });
+  T('dat lai du lieu mau (hoi lai trong hop thoai)', () => {
+    click('[data-act="reset"]'); if (q('#dlg').hidden || !/thay đổi chưa xuất bản/.test(q('#dlg-body').textContent)) throw new Error('khong hoi lai');
+    click('#dlg-ok'); if (qa('#ptbody tr.row').length !== 15) throw new Error('so quy trinh ' + qa('#ptbody tr.row').length);
     if (!/Không có thay đổi/.test(q('#draft-pill').textContent)) throw new Error('van con thay doi');
   });
   console.log(errs.length ? '\nLOI: ' + errs.join(' | ') : '\nTAT CA DEU CHAY, KHONG CO LOI');
