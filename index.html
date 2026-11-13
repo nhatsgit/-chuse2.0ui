@@ -551,6 +551,18 @@ input[type=text]:focus,select:focus,textarea:focus{outline:0;border-color:var(--
 .drawer{background:var(--mau-card)}
 .alert{padding:12px 16px;border-top-color:var(--vach)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* chuỗi chức năng */
+.chain{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.chain li{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border:1px solid var(--line);border-radius:9px;background:var(--surface)}
+.chain li.off{opacity:.55}
+.chain .cn{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:600;background:var(--surface-2);color:var(--muted)}
+.chain .cb{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+.chain .ct{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.chain .cacts{display:flex;gap:2px;flex:none;flex-wrap:wrap;justify-content:flex-end}
+.chain input.cond{font-size:12px}
+input.cond.bad{border-color:var(--bad);box-shadow:0 0 0 1px var(--bad)}
+@media (max-width:560px){.chain li{flex-wrap:wrap}.chain .cacts{width:100%;justify-content:flex-start}}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -570,7 +582,7 @@ input[type=text]:focus,select:focus,textarea:focus{outline:0;border-color:var(--
     <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
     <symbol id="i-minus" viewBox="0 0 24 24"><path d="M6 12h12"/></symbol>
     <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></symbol>
-    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.6-4.5M4 4v3h3"/><path d="M4 13a8 8 0 0 0 14.6 4.5M20 20v-3h-3"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.6-4.5M4 4v3h3"/><path d="M4 13a8 8 0 0 0 14.6 4.5M20 20v-3h-3"/></symbol><symbol id="i-rule" viewBox="0 0 24 24"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></symbol>
   </defs>
 </svg>
 
@@ -590,6 +602,7 @@ input[type=text]:focus,select:focus,textarea:focus{outline:0;border-color:var(--
       <a class="ck-ph-he" href="#quy-trinh" data-v="quy-trinh"><svg class="ico"><use href="#i-flow"/></svg><span>Quy trình</span></a>
       <a class="ck-ph-he" href="#tu-dien" data-v="tu-dien"><svg class="ico"><use href="#i-book"/></svg><span>Từ điển</span></a>
       <a class="ck-ph-he" href="#nhat-ky" data-v="nhat-ky"><svg class="ico"><use href="#i-log"/></svg><span>Nhật ký chạy</span></a>
+      <a class="ck-ph-he" href="#quy-tac" data-v="quy-tac"><svg class="ico"><use href="#i-rule"/></svg><span>Quy tắc chung</span></a>
     </nav>
     <div class="demo">Bản xem thử, chưa nối với Base. Quy trình và phiếu là dữ liệu mẫu; lưu đồ của 5 dịch vụ lấy từ lần đọc thật. Thay đổi được giữ trên trình duyệt này.</div>
     <div class="ck-ben-duoi"><span>Cao su Bean Heack</span><button class="ck-nut-tron" data-act="theme" type="button" title="Đổi giao diện sáng, tối" aria-label="Đổi giao diện sáng, tối"><svg class="ico"><use href="#i-moon"/></svg></button></div>
@@ -953,10 +966,12 @@ const state = {
   pickOpen:false, pickQ:'', dirty:new Set(), wiz:null, versions:[], confirm:null, resetArm:false,
   issues:[
     {id:1, sev:'bad', title:'Luồng "Chèn số / Trả số" chưa có trong cấu hình', where:'Văn thư đi_BHCK · bước Cấp số', fix:'Mở bước', pid:'vti-bhck', si:3},
-    {id:2, sev:'warn', title:'Tài khoản cho phiếu lương đi tiếp đang là tài khoản cá nhân', where:'Tạm ứng/Thanh toán · bước Quay về phiếu lương', fix:'Mở bước', pid:'ttoan', si:4}
+    {id:2, sev:'warn', title:'Tài khoản cho phiếu lương đi tiếp đang là tài khoản cá nhân', where:'Tạm ứng/Thanh toán · bước Quay về phiếu lương', fix:'Mở bước', pid:'ttoan', si:4},
+    {id:3, sev:'warn', title:'Base có 1 khối webhook mới chưa cấu hình', where:'Văn thư đi_CRCK · đối chiếu Base lúc 07:00 hôm nay', fix:'Mở quy trình', pid:'vti-crck', si:0},
+    {id:4, sev:'bad', title:'Trường "service_so_hieu_vb_bhck" không còn trên form Base', where:'Văn thư đi_BHCK · vai trò Số ký hiệu (Quy tắc chung)', fix:'Mở quy trình', pid:'vti-bhck', si:0}
   ]
 };
-const VIEWS = {'quy-trinh':'Quy trình', 'tu-dien':'Từ điển', 'nhat-ky':'Nhật ký chạy'};
+const VIEWS = {'quy-trinh':'Quy trình', 'tu-dien':'Từ điển', 'nhat-ky':'Nhật ký chạy', 'quy-tac':'Quy tắc chung'};
 const procById = id => P.find(p => p.id === id);
 const curProc = () => procById(state.pid);
 const curStep = () => { const p = curProc(); return p ? p.steps[state.si] : null; };
@@ -966,8 +981,8 @@ const unset = p => p.steps.filter(s => !isSet(s)).length;
 function markDirty(key){ state.dirty.add(key); updateDraft(); persist(); }
 const STORE_KEY = 'base-dieu-khien-mau-v3';
 const nowStr = () => { const d = new Date(), pad = n => String(n).padStart(2, '0'); return pad(d.getHours()) + ':' + pad(d.getMinutes()) + ' ' + pad(d.getDate()) + '/' + pad(d.getMonth() + 1); };
-function snapshot(){ return JSON.stringify({P:P, DICT:DICT}); }
-function applySnap(json){ const d = JSON.parse(json); P.splice(0, P.length, ...d.P); Object.keys(DICT).forEach(k => { if (d.DICT[k]) DICT[k] = d.DICT[k]; }); }
+function snapshot(){ return JSON.stringify({P:P, DICT:DICT, RULES:RULES}); }
+function applySnap(json){ const d = JSON.parse(json); P.splice(0, P.length, ...d.P); Object.keys(DICT).forEach(k => { if (d.DICT[k]) DICT[k] = d.DICT[k]; }); if (d.RULES) Object.keys(RULES).forEach(k => { if (d.RULES[k]) RULES[k] = d.RULES[k]; }); }
 function persist(){ try { localStorage.setItem(STORE_KEY, JSON.stringify({snap:snapshot(), issues:state.issues, dirty:Array.from(state.dirty), versions:state.versions.slice(-8)})); } catch (e) {} }
 function loadSaved(){
   try {
@@ -1166,6 +1181,7 @@ function editorHTML(p, st){
     b += '<p class="help">Hệ thống gửi lại đủ các trường của bước đang chờ, nên Base không xoá trắng trường nào.</p>';
     h += capSec('exec', 'Cho phiếu khác đi tiếp', b);
   }
+  h += chainHTML(p, st);
   return h + '</div>';
 }
 function railHTML(p){
@@ -1175,6 +1191,7 @@ function railHTML(p){
     const tags = CAPS.filter(cp => s.caps[cp.k]).map(cp => '<span class="tag">' + cp.tag + '</span>');
     if (!isSet(s)) tags.push('<span class="tag warn">Chưa cấu hình</span>');
     if (s.copied) tags.push('<span class="tag warn">Cần kiểm</span>');
+    if (s.chainCustom) tags.push('<span class="tag">Chuỗi riêng</span>');
     h += '<button class="step" type="button" data-act="step" data-i="' + i + '" aria-current="' + (i === state.si) + '"><span class="n">' + (s.start ? '•' : i - base) + '</span><span><b>' + esc(s.name) + '</b><small>' + s.block + '</small><span class="tags">' + tags.join('') + '</span></span></button>';
   });
   return h + '<button class="step" type="button" data-act="addstep"><span class="n">' + icon('plus') + '</span><span><b>Thêm bước</b><small>Gắn Block ID mới</small></span></button>';
@@ -1259,7 +1276,9 @@ function viewDetail(p){
   let h = '<div class="detail-head"><button class="btn ghost sm" data-act="back" type="button">' + icon('back') + 'Tất cả quy trình</button></div>';
   h += '<div class="detail-head"><div class="ck-ph-ico" aria-hidden="true">' + icon('flow') + '</div><div class="grow"><h1>' + esc(p.name) + '</h1><div class="meta"><span class="pill">Dịch vụ <span class="mono">' + p.svc + '</span></span><span class="pill">Lưu vào bảng: ' + esc(p.store) + '</span>' + (u ? '<span class="pill warn"><span class="dot"></span>' + u + ' bước chưa cấu hình</span>' : '<span class="pill ok"><span class="dot"></span>Đã cấu hình đủ</span>') + '</div></div>';
   h += '<div class="inline"><label class="small muted" for="f-engine">Loại xử lý</label><select id="f-engine" data-pbind="e" style="width:auto">' + Object.keys(TYPES).map(k => '<option value="' + k + '"' + (k === p.e ? ' selected' : '') + '>' + TYPES[k][0] + '</option>').join('') + '</select>';
+  h += '<label class="small muted" for="f-mode">Chế độ</label><select id="f-mode" data-pbind="mode" style="width:auto">' + Object.keys(MODES).map(k => '<option value="' + k + '"' + (k === (p.mode || 'that') ? ' selected' : '') + '>' + MODES[k] + '</option>').join('') + '</select>';
   h += '<label class="inline small" for="f-on"><span class="sw"><input type="checkbox" id="f-on" data-pbind="on"' + (p.on ? ' checked' : '') + '><span></span></span>' + (p.on ? 'Đang bật' : 'Đang tắt') + '</label><button class="btn sm" type="button" data-act="dupproc">Nhân bản</button><button class="btn ghost sm" type="button" data-act="askdelproc">Xoá</button></div></div>';
+  h += modePanelHTML(p);
   if (state.confirm === 'proc:' + p.id) h += confirmBox('Xoá quy trình "' + esc(p.name) + '" và toàn bộ ' + p.steps.length + ' bước cấu hình? Dịch vụ trên Base không bị ảnh hưởng.', 'delproc', 'Xoá quy trình');
   h += '<div class="ptabs" role="tablist"><button class="ptab" role="tab" type="button" data-act="ptab" data-v="cfg" aria-selected="' + (state.ptab === 'cfg') + '">Cấu hình từng bước</button><button class="ptab" role="tab" type="button" data-act="ptab" data-v="flow" aria-selected="' + (state.ptab === 'flow') + '">Lưu đồ trên Base</button></div>';
   if (state.ptab === 'flow'){
@@ -1358,12 +1377,13 @@ function dryRun(){
   if (isSet(st)) tr.push(['ok', 'Đẩy lên Base', 'Giữ nguyên người theo dõi hiện có']);
   if (c.lt) st.lt.forEach(t => tr.push(['ok', 'Gửi số liệu sang quy trình khác', t.proc + ' · ' + (t.fields.length || 'tất cả') + ' trường']));
   if (c.exec && st.exec) tr.push(st.exec.field && st.exec.user ? ['ok', 'Cho phiếu khác đi tiếp', 'ID lấy từ "' + fname(st.exec.field) + '" · tài khoản ' + st.exec.user] : ['err', 'Cho phiếu khác đi tiếp', 'Chưa chọn trường chứa ID hoặc tài khoản thực hiện']);
+  if (st.chainCustom && st.chain) tr.push(['ok', 'Chuỗi riêng của bước', st.chain.filter(x => !x.tat).map(x => (ACT[x.loai] || [x.loai])[0] + (x.dieu_kien ? ' (khi ' + x.dieu_kien + ')' : '')).join(' → ')]);
   openDrawer('Chạy thử: ' + st.name, esc(p.name) + ' · không gửi gì lên Base', '<div class="note info" style="margin-bottom:16px">Chạy với dữ liệu mẫu ' + (state.long ? '"Rất dài"' : '"Thông thường"') + ', theo cấu hình đang sửa kể cả phần chưa xuất bản.</div>' + traceHTML(tr));
 }
 function showLog(i){
   const l = LOGS[i], pr = P.find(p => p.name === l.p);
   openDrawer(l.p, '<span class="mono">' + l.t + '</span> · khối <span class="mono">' + l.b + '</span> · phiếu <span class="mono">' + l.tk + '</span>',
-    '<p style="margin-bottom:16px">' + esc(l.m) + '</p>' + traceHTML(l.tr) + (pr ? '<div class="inline" style="margin-top:6px"><button class="btn sm" type="button" data-act="open" data-pid="' + pr.id + '" data-si="' + Math.max(0, pr.steps.findIndex(s => s.block === l.b)) + '">Mở bước này</button></div>' : ''));
+    '<p style="margin-bottom:16px">' + esc(l.m) + '</p>' + traceHTML(l.tr) + replayHTML(i) + (pr ? '<div class="inline" style="margin-top:6px"><button class="btn sm" type="button" data-act="open" data-pid="' + pr.id + '" data-si="' + Math.max(0, pr.steps.findIndex(s => s.block === l.b)) + '">Mở bước này</button></div>' : ''));
 }
 
 /* --- trình thêm quy trình từ link Base --- */
@@ -1570,6 +1590,7 @@ function render(){
   if (v === 'quy-trinh' && curProc()){ html = viewDetail(curProc()); crumb = 'Quy trình / ' + curProc().name; }
   else if (v === 'tu-dien') html = viewDict();
   else if (v === 'nhat-ky') html = viewLogs();
+  else if (v === 'quy-tac') html = viewRules();
   else html = viewProcs();
   $('#crumb').textContent = crumb;
   $('#view').innerHTML = '<div class="work">' + html + '</div>';
@@ -1855,6 +1876,396 @@ document.addEventListener('change', e => {
     if (key === 'block') render(); else rerenderEditor();
   }
 });
+
+/* ================= hệ thống linh hoạt: chuỗi chức năng, chế độ chạy, chạy lại, quy tắc chung ================= */
+// Danh mục chức năng — trùng với backend src/engine/actions.js (key: [nhãn, nhóm, cần, tạo ra, ghi ra ngoài])
+const ACT = {
+  thong_bao: ['Ghi ô thông báo', 'Chung', [], [], 0], ghi_truong: ['Ghi trường từ Base vào sheet', 'Chung', [], [], 0],
+  dat_gia_tri: ['Đặt giá trị 1 trường', 'Chung', [], [], 0], dat_ten_phieu: ['Đặt tên phiếu', 'Chung', [], ['ten_phieu'], 0],
+  dat_noi_dung: ['Đặt nội dung phiếu', 'Chung', [], [], 0], dung: ['Dừng chuỗi', 'Chung', [], [], 0],
+  tai_file: ['Tải file từ Base', 'File', [], ['file_nguon'], 0], chuyen_pdf: ['Chuyển Word → PDF', 'File', ['file_nguon'], ['pdf'], 0],
+  luu_drive: ['Lưu file lên Drive', 'File', ['file_nguon'], [], 1], day_file_base: ['Bắn file vào trường Base', 'File', [], [], 1],
+  cap_nhat_link: ['Cập nhật link file', 'File', [], [], 0], doc_ai: ['AI đọc văn bản', 'AI', ['file_nguon'], ['ai'], 0],
+  dong_bo_base: ['Đồng bộ phiếu lên Base', 'Base', [], [], 1], dong_bo_truong: ['Đẩy vài trường lên Base', 'Base', [], [], 1],
+  tao_office: ['Lưu kho Base Office', 'Base', [], [], 1],
+  cap_so: ['Cấp số văn bản', 'Cấp số', [], ['so'], 0], kiem_trung_so: ['Kiểm tra trùng số / sai thứ tự', 'Cấp số', ['so'], [], 0],
+  sap_xep_so: ['Sắp xếp sheet + đánh lại STT', 'Cấp số', [], [], 0],
+  vt_den_lap_ho_so: ['VT đến: lập hồ sơ từ kết quả AI', 'Văn thư đến', ['ai'], ['file_chinh', 'ten_phieu'], 0],
+  vt_den_chuan_bi: ['VT đến: chuẩn bị biến mẫu', 'Văn thư đến', [], [], 0], vt_den_chuyen_file: ['VT đến: đổi tên + chuyển file', 'Văn thư đến', [], ['file_chinh'], 0],
+  vt_di_lap_ho_so: ['VT đi: lập hồ sơ dự thảo', 'Văn thư đi', ['ai', 'pdf'], ['file_chinh', 'ten_phieu'], 0],
+  vt_di_chuan_bi: ['VT đi: chuẩn bị biến mẫu', 'Văn thư đi', [], [], 0], vt_di_chuyen_file: ['VT đi: đổi tên / dùng file đã ký', 'Văn thư đi', [], ['file_chinh'], 0],
+  vt_di_ten_cap_so: ['VT đi: tên phiếu + nội dung sau cấp số', 'Văn thư đi', ['so'], ['ten_phieu'], 0], vt_di_dong_so_file: ['VT đi: đóng số vào tên file', 'Văn thư đi', ['so'], ['file_chinh'], 0]
+};
+const ACT_GROUPS = ['Chung', 'File', 'AI', 'Base', 'Cấp số', 'Văn thư đến', 'Văn thư đi'];
+const PRESET = {
+  vt_den_ai: ['Văn thư đến — AI đọc văn bản', ['thong_bao', 'tai_file', 'doc_ai', 'vt_den_lap_ho_so', 'day_file_base', 'dat_noi_dung', 'thong_bao', 'dong_bo_base', 'tao_office']],
+  vt_den_chuyen_tiep: ['Văn thư đến — các bước sau', ['ghi_truong', 'vt_den_chuan_bi', 'dat_ten_phieu', 'vt_den_chuyen_file', 'day_file_base', 'dat_noi_dung', 'dong_bo_base', 'cap_nhat_link', 'tao_office']],
+  vt_di_ai: ['Văn thư đi — AI đọc dự thảo', ['thong_bao', 'tai_file', 'chuyen_pdf', 'doc_ai', 'vt_di_lap_ho_so', 'dat_noi_dung', 'thong_bao', 'day_file_base', 'dong_bo_base']],
+  vt_di_chuyen_tiep: ['Văn thư đi — các bước giữa / ban hành', ['ghi_truong', 'vt_di_chuan_bi', 'dat_ten_phieu', 'vt_di_chuyen_file', 'day_file_base', 'dat_noi_dung', 'dong_bo_base', 'cap_nhat_link', 'tao_office']],
+  vt_di_cap_so: ['Văn thư đi — cấp số', ['ghi_truong', 'cap_so', 'kiem_trung_so', 'vt_di_ten_cap_so', 'vt_di_dong_so_file', 'day_file_base', 'dat_noi_dung', 'dong_bo_base', 'sap_xep_so']]
+};
+const isDi = p => /văn thư đi/i.test(p.name);
+/** Chuỗi suy ra từ "Bước này làm gì?" — văn thư dùng mẫu có sẵn của backend, quy trình khác ghép theo việc đã bật. */
+function derivedChain(p, st){
+  const c = st.caps;
+  if (p.e === 'vanthu'){
+    const k = c.ai && st.src ? (isDi(p) ? 'vt_di_ai' : 'vt_den_ai') : (isDi(p) && st.capso ? 'vt_di_cap_so' : (isDi(p) ? 'vt_di_chuyen_tiep' : 'vt_den_chuyen_tiep'));
+    return {key:k, label:PRESET[k][0], chain:PRESET[k][1].map(l => ({loai:l}))};
+  }
+  const ch = [];
+  if (c.truong) ch.push('ghi_truong');
+  if (c.ai || (c.file && st.src)) ch.push('tai_file');
+  if (c.ai) ch.push('doc_ai');
+  if (c.file && st.drive) ch.push('luu_drive');
+  if (c.ten) ch.push('dat_ten_phieu', 'dat_noi_dung');
+  if (isSet(st)) ch.push('dong_bo_base');
+  if (c.file && st.dst) ch.push('day_file_base');
+  if (c.office) ch.push('tao_office');
+  if (isSet(st)) ch.push('thong_bao');
+  return {key:'tu_viec', label:'Ghép từ các việc đã bật', chain:ch.map(l => ({loai:l}))};
+}
+const chainOf = (p, st) => st.chainCustom && st.chain ? {key:'rieng', label:'Chuỗi riêng', chain:st.chain} : derivedChain(p, st);
+function chainCheck(chain){
+  const have = new Set(), out = [];
+  chain.forEach((x, i) => {
+    const a = ACT[x.loai]; if (!a) { out.push('#' + (i + 1) + ' chức năng lạ "' + x.loai + '"'); return; }
+    if (x.dieu_kien){ try { condCompile(x.dieu_kien); } catch (e) { out.push('#' + (i + 1) + ' ' + a[0] + ': ' + e.message); } }
+    if (x.tat) return;
+    a[2].forEach(c => { if (!have.has(c)) out.push('#' + (i + 1) + ' ' + a[0] + ' cần "' + c + '" từ chức năng phía trước'); });
+    a[3].forEach(t => have.add(t));
+  });
+  return out;
+}
+function chainHTML(p, st){
+  const r = chainOf(p, st), warn = chainCheck(r.chain), custom = r.key === 'rieng';
+  let h = '<section class="ed-sec" id="sec-chain"><header><h3>Chuỗi chức năng sẽ chạy</h3><label class="inline small" for="ch-custom"><span class="sw"><input type="checkbox" id="ch-custom" data-cb="custom"' + (custom ? ' checked' : '') + '><span></span></span>Tự sắp chuỗi</label></header>';
+  h += '<p class="help" style="margin-bottom:10px">' + (custom ? 'Chuỗi riêng của bước này (cột <span class="mono">chuc_nang</span>). Đổi thứ tự, tắt, thêm điều kiện cho từng chức năng.' : 'Suy ra từ các việc đã bật ở trên: <b>' + esc(r.label) + '</b>' + (r.key.startsWith('vt_') ? ' (mẫu <span class="mono">' + r.key + '</span>, giữ đúng cách Apps Script đang chạy)' : '') + '. Bật "Tự sắp chuỗi" để sửa.') + '</p>';
+  h += '<ol class="chain">' + r.chain.map((x, i) => {
+    const a = ACT[x.loai] || [x.loai, '?', [], [], 0];
+    let li = '<li class="' + (x.tat ? 'off' : '') + '"><span class="cn">' + (i + 1) + '</span><div class="cb"><div class="ct"><b>' + esc(a[0]) + '</b><span class="tag">' + esc(a[1]) + '</span>' + (a[4] ? '<span class="tag warn" title="Chạy lại sự kiện sẽ bỏ qua nếu đã làm">ghi ra ngoài</span>' : '') + (x.tat ? '<span class="tag">đang tắt</span>' : '') + '</div>';
+    if (custom) li += '<input type="text" class="cond' + (x.dieu_kien && condErr(x.dieu_kien) ? ' bad' : '') + '" data-cb="cond" data-i="' + i + '" value="' + esc(x.dieu_kien || '') + '" placeholder="Chỉ chạy khi… VD: luong là giu_so và so_hieu trống" aria-label="Điều kiện chạy">';
+    else if (x.dieu_kien) li += '<div class="small muted">Khi: ' + esc(x.dieu_kien) + '</div>';
+    li += '</div>';
+    if (custom) li += '<div class="cacts"><button class="btn ghost sm" type="button" data-act="ch-up" data-i="' + i + '" aria-label="Lên"' + (i ? '' : ' disabled') + '>↑</button><button class="btn ghost sm" type="button" data-act="ch-down" data-i="' + i + '" aria-label="Xuống"' + (i < r.chain.length - 1 ? '' : ' disabled') + '>↓</button><button class="btn ghost sm" type="button" data-act="ch-tat" data-i="' + i + '">' + (x.tat ? 'Bật' : 'Tắt') + '</button><button class="btn ghost sm" type="button" data-act="ch-rm" data-i="' + i + '" aria-label="Xoá">' + icon('x') + '</button></div>';
+    return li + '</li>';
+  }).join('') + '</ol>';
+  if (custom){
+    h += '<div class="inline" style="margin-top:10px"><select id="ch-add" aria-label="Chọn chức năng để thêm" style="width:auto;flex:1">' + ACT_GROUPS.map(g => '<optgroup label="' + g + '">' + Object.keys(ACT).filter(k => ACT[k][1] === g).map(k => '<option value="' + k + '">' + esc(ACT[k][0]) + '</option>').join('') + '</optgroup>').join('') + '</select><button class="btn sm" type="button" data-act="ch-add">' + icon('plus') + 'Thêm</button><button class="btn ghost sm" type="button" data-act="ch-reset">Về chuỗi suy ra</button></div>';
+  }
+  if (warn.length) h += '<div class="note" style="margin-top:10px">' + warn.map(esc).join('<br>') + '</div>';
+  else if (custom) h += '<div class="note ok" style="margin-top:10px">Chuỗi hợp lệ. Hệ thống kiểm lại lần nữa khi xuất bản.</div>';
+  return h + '</section>';
+}
+
+/* ---- chế độ chạy của quy trình: thật / bóng / chuyển tiếp ---- */
+const MODES = {that:'Chạy thật', bong:'Chạy bóng (so với Apps Script)', chuyen_tiep:'Chỉ chuyển tiếp sang Apps Script'};
+function shadowStats(p){
+  let s = 0; for (const ch of p.id) s = (s * 31 + ch.charCodeAt(0)) % 997;
+  const total = 12 + s % 30, lech = s % 4;
+  const items = [];
+  for (let i = 0; i < lech; i++) items.push({tk:'27' + (68100 + s + i * 7), buoc:p.steps[(i + 1) % p.steps.length] ? p.steps[(i + 1) % p.steps.length].name : 'Bước', truong:['service_so_ky_hieu_van_ban', 'name', 'service_ngay_ban_hanh'][i % 3], du_kien:['4/KH-DU', 'VT Đi - Số 4/KH-DU | Kế hoạch thi đua', '12/11/2026'][i % 3], thuc_te:['4A/KH-DU', 'VT Đi - Số 4/KH-DU | Kế hoạch thi đua năm', '11/11/2026'][i % 3]});
+  return {total, khop:total - lech, lech, items};
+}
+function modePanelHTML(p){
+  const m = p.mode || 'that';
+  if (m === 'that') return '';
+  let b = '<div class="fld" style="margin-bottom:8px"><label for="f-fw">Địa chỉ Apps Script cũ của quy trình này</label><input type="text" class="mono" id="f-fw" data-pbind="fwUrl" value="' + esc(p.fwUrl || '') + '" placeholder="https://script.google.com/macros/s/…/exec"></div>';
+  if (!p.fwUrl) b += '<div class="note bad">Chưa khai địa chỉ Apps Script: Base gửi về hệ thống mới nhưng không ai xử lý thật. Xuất bản sẽ bị chặn.</div>';
+  if (m === 'chuyen_tiep') b += '<p class="help">Base gửi tín hiệu về hệ thống mới, hệ thống lưu lại rồi chuyển nguyên gói tin sang Apps Script, trả lời Base đúng câu Apps Script trả. Nghiệp vụ không đổi. Dùng để đổi địa chỉ webhook trên Base <b>một lần</b> cho mọi khối.</p>';
+  if (m === 'bong'){
+    const s = shadowStats(p);
+    b += '<p class="help">Hệ thống chạy cấu hình mới trước nhưng <b>không ghi</b> Base, sheet, Drive, Office; ghi lại các trường định ghi, rồi chuyển gói tin cho Apps Script xử lý thật. Sau 10 phút đọc phiếu thật để so.</p>';
+    b += '<div class="inline" style="margin-top:6px"><span class="pill ok"><span class="dot"></span>' + s.khop + ' lượt khớp</span>' + (s.lech ? '<span class="pill warn"><span class="dot"></span>' + s.lech + ' lượt lệch</span><button class="btn sm" type="button" data-act="shadowview">Xem chỗ lệch</button>' : '<span class="small muted">Chưa thấy lệch — có thể chuyển sang "Chạy thật".</span>') + '</div>';
+  }
+  return '<section class="card" style="margin-bottom:14px"><div class="card-h"><h2>' + esc(MODES[m]) + '</h2><span class="small muted">Chuyển dần từng quy trình khỏi Apps Script</span></div><div style="padding:0 16px 16px">' + b + '</div></section>';
+}
+function shadowDrawer(p){
+  const s = shadowStats(p);
+  openDrawer('So sánh chạy bóng', esc(p.name) + ' · ' + s.total + ' lượt · ' + s.lech + ' lệch',
+    '<p class="help" style="margin-bottom:12px">Mỗi dòng là một trường hệ thống mới định ghi khác với giá trị Apps Script đã ghi trên phiếu thật. Bỏ qua ô thông báo và nội dung HTML.</p>' +
+    '<div class="ck-bang"><table class="tbl"><thead><tr><th>Phiếu</th><th>Bước</th><th>Trường</th><th>Hệ thống mới</th><th>Apps Script</th></tr></thead><tbody>' +
+    s.items.map(x => '<tr><td class="mono">' + x.tk + '</td><td>' + esc(x.buoc) + '</td><td class="mono small">' + esc(x.truong) + '</td><td>' + esc(x.du_kien) + '</td><td>' + esc(x.thuc_te) + '</td></tr>').join('') + '</tbody></table></div>' +
+    '<p class="help" style="margin-top:12px">Lệch ở số hiệu thường do hai bên cấp số trên cùng một sheet trong cùng lúc; lệch tên phiếu do mẫu tên khác. Sửa cấu hình rồi theo dõi tiếp.</p>');
+}
+
+/* ---- chạy lại 1 lượt từ nhật ký ---- */
+const SIDE = /Đẩy lên Base|Gửi file|Đăng Base Office|Cất file|Bắn file|Lưu kho|Giữ người theo dõi/;
+function replayHTML(i){
+  const l = LOGS[i];
+  return '<section class="card" style="margin-top:14px"><div class="card-h"><h2>Chạy lại lượt này</h2><span class="small muted">Gói tin gốc đã được lưu</span></div><div style="padding:0 16px 16px">' +
+    '<p class="help" style="margin-bottom:10px">Chạy lại đúng gói tin Base đã gửi lúc <span class="mono">' + esc(l.t) + '</span> với cấu hình đang chạy. Việc <b>ghi ra ngoài</b> (đẩy Base, bắn file, Office, Drive) đã làm xong ở lần trước sẽ được bỏ qua để không nhân đôi.</p>' +
+    '<div class="inline"><button class="btn primary sm" type="button" data-act="replay" data-i="' + i + '" data-all="0">' + icon('refresh') + 'Chạy lại</button><button class="btn sm" type="button" data-act="replay" data-i="' + i + '" data-all="1">Làm lại hết</button></div></div></section>';
+}
+function doReplay(i, all){
+  const l = LOGS[i], pr = P.find(p => p.name === l.p);
+  const blocked = pr && state.issues.some(x => x.pid === pr.id && x.sev === 'bad');
+  const tr = (l.orig || l.tr).map(x => {
+    if (x[0] === 'ok' && SIDE.test(x[1]) && !all) return ['skip', x[1], 'Đã làm ở lần chạy trước — bỏ qua'];
+    if (x[0] === 'err') return blocked ? ['err', x[1], (x[2] || '') + ' — vẫn lỗi, sửa cấu hình rồi chạy lại'] : ['ok', x[1], 'Chạy được với cấu hình hiện tại'];
+    return x;
+  });
+  tr.unshift(['ok', 'Lấy gói tin đã lưu', 'Lượt gốc lúc ' + l.t + ' · ' + (all ? 'làm lại hết' : 'bỏ qua việc đã làm')]);
+  const s = tr.some(x => x[0] === 'err') ? 'err' : (tr.some(x => x[0] === 'warn') ? 'warn' : 'ok');
+  const now = new Date(), t = [now.getHours(), now.getMinutes(), now.getSeconds()].map(n => String(n).padStart(2, '0')).join(':');
+  LOGS.unshift(Object.assign({}, l, {t, s, tr, orig:l.orig || l.tr, m:'Chạy lại lượt ' + l.t + (all ? ' (làm lại hết)' : '') + ': ' + (s === 'err' ? 'vẫn lỗi' : 'xong')}));
+  closeDrawer(); state.lf = 'Tất cả'; go('nhat-ky'); toast('Đã chạy lại lượt ' + l.t + (s === 'err' ? ' — vẫn lỗi' : ''));
+}
+
+/* ---- điều kiện tiếng Việt (giống backend src/engine/dieuKien.js) ---- */
+function condSplit(t, words){
+  const out = []; let cur = '', q = null; const re = new RegExp('^\\s+(' + words.join('|') + ')\\s+', 'i');
+  for (let i = 0; i < t.length; i++){
+    const ch = t[i];
+    if (q){ cur += ch; if (ch === q) q = null; continue; }
+    if (ch === '"' || ch === "'"){ q = ch; cur += ch; continue; }
+    const m = /\s/.test(ch) ? t.slice(i).match(re) : null;
+    if (m){ out.push(cur); cur = ''; i += m[0].length - 1; continue; }
+    cur += ch;
+  }
+  out.push(cur); return out.map(s => s.trim()).filter(Boolean);
+}
+function condCompile(text){
+  const t = String(text || '').trim(); if (!t) return null;
+  return condSplit(t, ['hoặc', '\\|\\|', 'or']).map(g => condSplit(g, ['và', '&&', 'and']).map(raw => {
+    let m = raw.match(/^(\S+)\s+(trống|rỗng|có giá trị|khác trống|là|không là)\s*(.*)$/i);
+    if (m) return {f:m[1], op:m[2].toLowerCase(), v:m[3].trim()};
+    m = raw.match(/^([^\s<>=!~]+)\s*(<=|>=|!=|!~|=|<|>|~)\s*(.+)$/);
+    if (m) return {f:m[1], op:m[2], v:m[3].trim()};
+    throw new Error('không hiểu "' + raw + '"');
+  }));
+}
+const condErr = t => { try { condCompile(t); return ''; } catch (e) { return e.message; } };
+const vnD = s => { const m = String(s || '').match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/); return m ? new Date(+m[3], +m[2] - 1, +m[1]) : null; };
+function condEval(c, get){
+  if (!c) return true;
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const val = v => { const u = v.replace(/^(["'])(.*)\1$/, '$2'); if (u !== v) return u; if (v === 'hom_nay') return today; return v; };
+  const one = x => {
+    const L = String(get(x.f) || '').trim(), empty = L === '' || L === '---';
+    if (x.op === 'trống' || x.op === 'rỗng') return empty;
+    if (x.op === 'có giá trị' || x.op === 'khác trống') return !empty;
+    if (x.op === 'là') return luongKind(L) === x.v;
+    if (x.op === 'không là') return luongKind(L) !== x.v;
+    const R = val(x.v);
+    if (x.op === '=') return L.toLowerCase() === String(R).toLowerCase();
+    if (x.op === '!=') return L.toLowerCase() !== String(R).toLowerCase();
+    if (x.op === '~') return L.toLowerCase().includes(String(R).toLowerCase());
+    if (x.op === '!~') return !L.toLowerCase().includes(String(R).toLowerCase());
+    if (empty) return false;
+    const a = vnD(L), b = R instanceof Date ? R : vnD(R);
+    const d = a && b ? a - b : (a || b ? NaN : Number(L) - Number(R));
+    return x.op === '<' ? d < 0 : x.op === '<=' ? d <= 0 : x.op === '>' ? d > 0 : d >= 0;
+  };
+  return c.some(and => and.every(one));
+}
+
+/* ---- quy tắc chung: vai trò trường, giá trị luồng, quy tắc số, lịch chạy ---- */
+const ROLES_UI = [
+  ['luong', 'service_luong_xu_ly_van_thu', 'Luồng xử lý', 'Chung'], ['thong_bao', 'service_thong_bao', 'Ô thông báo hệ thống', 'Chung'], ['tom_tat', 'service_tom_tat_noi_dung_van_thu', 'Tóm tắt nội dung', 'Chung'], ['tinh_trang', 'service_tinh_trang_van_thu', 'Tình trạng', 'Chung'],
+  ['so_hieu', 'service_so_ky_hieu_van_ban', 'Số ký hiệu văn bản', 'Văn bản'], ['loai_van_thu', 'service_loai_van_thu', 'Loại văn bản', 'Văn bản'], ['trich_yeu', 'service_trich_yeu_noi_dung', 'Trích yếu', 'Văn bản'], ['so_trang', 'service_so_trang', 'Số trang', 'Văn bản'],
+  ['ngay_van_ban', 'service_ngay_van_ban', 'Ngày trên văn bản', 'Văn bản'], ['ngay_ban_hanh', 'service_ngay_ban_hanh', 'Ngày ban hành', 'Văn bản'], ['ngay_het_han', 'service_ngay_het_han', 'Ngày hết hạn', 'Văn bản'],
+  ['ma_van_thu', 'service_ma_van_thu_den', 'Mã văn thư đến', 'Văn thư đến'], ['ngay_nhan', 'service_ngay_nhan_van_thu', 'Ngày nhận', 'Văn thư đến'], ['co_quan', 'service_don_vi_ban_hanh', 'Cơ quan ban hành', 'Văn thư đến'], ['ma_co_quan', 'service_ma_don_vi_ban_hanh_van_thu_den', 'Mã cơ quan (Base bắt buộc)', 'Văn thư đến'],
+  ['y_kien_dang_uy', 'service_y_kien_cua_dang_uy', 'Ý kiến lãnh đạo', 'Văn thư đến'], ['ca_nhan_chu_tri', 'service_ca_nhan_chu_tri', 'Cá nhân chủ trì', 'Văn thư đến'], ['don_vi_thuc_hien', 'service_don_vi_thuc_hien', 'Đơn vị thực hiện', 'Văn thư đến'], ['thoi_gian_thuc_hien', 'service_y_kien_khac', 'Thời hạn thực hiện', 'Văn thư đến'],
+  ['don_vi_soan_thao', 'service_don_vi_soan_thao', 'Đơn vị ban hành', 'Văn thư đi'], ['nguoi_soan_thao', 'service_nguoi_soan_thao', 'Người soạn thảo', 'Văn thư đi'], ['nguoi_ky', 'service_nguoi_ky', 'Người ký', 'Văn thư đi'], ['don_vi_nhan', 'service_don_vi_nhan_noi_bo', 'Đơn vị nhận nội bộ', 'Văn thư đi'],
+  ['tep_goc', 'service_tep_dinh_kem', 'Tệp gốc', 'File'], ['tep_ban_hanh', 'service_tep_dinh_kem_1', 'Tệp ban hành', 'File'], ['file_ky', 'service_tep_dinh_kem_2', 'Tệp đã ký tải lên', 'File'], ['link_drive', 'service_link_luu_tru_dam_may', 'Link lưu Drive', 'File'], ['link_office', 'service_link_luu_tru_base_office', 'Link kho Office', 'File']
+];
+const HV = {den:'Văn thư đến', di:'Văn thư đi (cấp số ngay)', giu_so:'Xin giữ số', chen_so:'Chèn số / Bù số'};
+const RULES = {
+  vaitro: {'vti-bhck': {so_hieu: 'service_so_hieu_vb_bhck', file_ky: 'service_file_da_ky'}},
+  luong: [{gia_tri:'Văn thư đến', hanh_vi:'den', dong_nghia:''}, {gia_tri:'Văn thư đi', hanh_vi:'di', dong_nghia:''}, {gia_tri:'Xin giữ số', hanh_vi:'giu_so', dong_nghia:'Xin số trước, giữ số, Xin số'}, {gia_tri:'Chèn số / Bù số', hanh_vi:'chen_so', dong_nghia:'Chèn, Bù'}],
+  so: [{qt:'*', mau:'{so}/{ma_loai}-{ma_dv}', chu_ky:'nam', hau_to:'A-Z', dien:'Có'}, {qt:'vti-bhck', mau:'{so}/{ma_loai}-{ma_dv}', chu_ky:'nam', hau_to:'.1', dien:'Có'}],
+  lich: [
+    {id:'van_thu_di_treo_qua_dem', ten:'Văn thư đi treo qua đêm → Chèn số / Bù số', on:true, qt:'*', gio:'23:00', loai:'Ngày', dieu_kien:'luong là di và so_hieu trống và root_id có giá trị', chain:['dat_gia_tri: luong = @chen_so', 'dat_gia_tri: thong_bao = ⚠️ tự chuyển luồng', 'dong_bo_truong: luong, thong_bao']},
+    {id:'giu_so_toi_han', ten:'Xin giữ số tới ngày ban hành → cấp số theo ngày', on:true, qt:'*', gio:'23:00', loai:'Ngày', dieu_kien:'luong là giu_so và so_hieu trống và ngay_ban_hanh <= hom_nay', chain:['cap_so: theo ngày', 'dat_gia_tri: tinh_trang = Giữ số', 'dat_ten_phieu: VT Đi - [GIỮ SỐ] Số {so_hieu} | {ten_phieu|bo_tien_to}', 'dong_bo_truong: ten_phieu, so_hieu, tom_tat'], sau:'sap_xep_so'},
+    {id:'nhac_qua_han', ten:'Nhắc văn bản đến quá hạn xử lý', on:false, qt:'vtd-du', gio:'08:00', loai:'Ngày', dieu_kien:'thoi_gian_thuc_hien < hom_nay và tinh_trang != "Hoàn thành"', chain:['dat_gia_tri: thong_bao = ⏰ Quá hạn {thoi_gian_thuc_hien}', 'dong_bo_truong: thong_bao']}
+  ]
+};
+const SAMPLE_ROWS = [
+  {root_id:'2768011', luong:'Văn thư đi', so_hieu:'3/KH-DU', ngay_ban_hanh:'01/11/2026', loai_van_thu:'Kế hoạch', trich_yeu:'Kế hoạch kiểm tra cuối năm', tinh_trang:'Đã ban hành'},
+  {root_id:'2768042', luong:'Xin giữ số', so_hieu:'', ngay_ban_hanh:'05/11/2026', loai_van_thu:'Kế hoạch', trich_yeu:'Kế hoạch thi đua 2027', tinh_trang:''},
+  {root_id:'2768057', luong:'Văn thư đi', so_hieu:'7/KH-DU', ngay_ban_hanh:'10/11/2026', loai_van_thu:'Kế hoạch', trich_yeu:'Kế hoạch tập huấn', tinh_trang:'Đã ban hành'},
+  {root_id:'2768063', luong:'Văn thư đi', so_hieu:'', ngay_ban_hanh:'11/11/2026', loai_van_thu:'Kế hoạch', trich_yeu:'Kế hoạch an toàn lao động', tinh_trang:''},
+  {root_id:'2768070', luong:'Xin giữ số', so_hieu:'', ngay_ban_hanh:'28/12/2026', loai_van_thu:'Kế hoạch', trich_yeu:'Kế hoạch tổng kết', tinh_trang:''},
+  {root_id:'2768002', luong:'Văn thư đến', so_hieu:'414/QĐ-CSVN', ngay_ban_hanh:'', thoi_gian_thuc_hien:'08/11/2026', loai_van_thu:'Quyết định', trich_yeu:'Về việc kiểm kê', tinh_trang:'Đang xử lý'}
+];
+function luongKind(v){
+  const s = String(v || '').trim(); if (!s) return '';
+  const ex = RULES.luong.find(r => r.gia_tri === s); if (ex) return ex.hanh_vi;
+  const low = s.toLowerCase();
+  for (const r of RULES.luong) for (const w of String(r.dong_nghia || '').split(',').map(x => x.trim().toLowerCase()).filter(Boolean)) if (low.includes(w)) return r.hanh_vi;
+  return '';
+}
+const luongValue = k => (RULES.luong.find(r => r.hanh_vi === k) || {}).gia_tri || HV[k] || k;
+function polFor(qt){ return Object.assign({mau:'{so}/{ma_loai}-{ma_dv}', chu_ky:'nam', hau_to:'A-Z', dien:'Có'}, RULES.so.find(r => r.qt === '*') || {}, RULES.so.find(r => r.qt === qt) || {}); }
+/** Cấp số theo ngày (giống backend allocateNumberByDate, 1 nhóm sổ). */
+function allocDemo(rows, dateStr, pol){
+  const t = vnD(dateStr); if (!t) return {so:'', note:'Ngày không hợp lệ'};
+  const per = d => pol.chu_ky === 'khong' ? 0 : pol.chu_ky === 'thang' ? d.getFullYear() * 100 + d.getMonth() : d.getFullYear();
+  let maxAll = 0, before = 0, minLater = Infinity; const used = [];
+  rows.forEach(r => {
+    const m = String(r.so_hieu || '').match(/^(\d+)(?:([A-Za-z]+)|\.(\d+))?/), d = vnD(r.ngay_ban_hanh);
+    if (!m || !d || per(d) !== per(t)) return;
+    const n = +m[1]; used.push({n, s:m[3] ? '.' + (+m[3]) : (m[2] || '').toUpperCase()});
+    maxAll = Math.max(maxAll, n); if (d <= t) before = Math.max(before, n); else minLater = Math.min(minLater, n);
+  });
+  if (!maxAll) return {so:'1', note:'chưa có số nào trong chu kỳ'};
+  if (maxAll === before) return {so:String(maxAll + 1), note:'lớn nhất (' + maxAll + ') + 1'};
+  if (pol.dien !== 'Không' && before + 1 < minLater) return {so:String(before + 1), note:'còn trống số ' + (before + 1)};
+  if (!before || pol.hau_to === 'khong') return {so:String(maxAll + 1), note:'không chèn được hậu tố → lớn nhất + 1'};
+  const u = new Set(used.filter(x => x.n === before && x.s).map(x => x.s));
+  let pick;
+  if (pol.hau_to === '.1'){ let k = 1; while (u.has('.' + k)) k++; pick = '.' + k; }
+  else { pick = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').find(c => !u.has(c)); if (pol.hau_to === 'a-z') pick = pick.toLowerCase(); }
+  return {so:before + pick, note:'ngày ở quá khứ → chèn sau số ' + before};
+}
+const fmtSo = (so, pol, loai, dv, y) => !so ? '' : pol.mau.replace(/\{so\}/g, so).replace(/\{ma_loai\}/g, loai).replace(/\{ma_dv\}/g, dv).replace(/\{nam\}/g, y).replace(/\{yy\}/g, String(y).slice(-2)).replace(/([/\-.])[/\-.]+/g, '$1').replace(/[/\-.]+$/, '');
+const RTABS = [['vaitro', 'Vai trò trường'], ['luong', 'Giá trị luồng'], ['so', 'Quy tắc số'], ['lich', 'Lịch chạy']];
+function viewRules(){
+  const t = state.rtab || 'vaitro';
+  let h = '<div class="ck-ph"><div class="ck-ph-ico" aria-hidden="true">' + icon('rule') + '</div><div class="ck-ph-chu"><h1>Quy tắc chung</h1><p>Những thứ trước đây viết cứng trong code: tên trường, giá trị luồng, cách đánh số, việc chạy theo giờ. Sửa ở đây rồi xuất bản như mọi cấu hình khác.</p></div></div>';
+  h += '<div class="tabs" role="tablist">' + RTABS.map(x => '<button class="tab" role="tab" type="button" data-act="rtab" data-v="' + x[0] + '" aria-selected="' + (x[0] === t) + '">' + x[1] + '</button>').join('') + '</div>';
+  if (t === 'vaitro') h += rulesRoles();
+  else if (t === 'luong') h += rulesLuong();
+  else if (t === 'so') h += rulesSo();
+  else h += rulesLich();
+  return h;
+}
+function rulesRoles(){
+  const vt = P.filter(p => p.e === 'vanthu'), pid = state.rproc && procById(state.rproc) ? state.rproc : vt[0].id, p = procById(pid), ov = RULES.vaitro[pid] || {};
+  const onForm = new Set((CAT[p.g] || []).map(x => x[0]));
+  let h = '<section class="card"><div class="card-h"><h2>Tên trường theo vai trò</h2><span class="small muted">Code chỉ hiểu vai trò. Quy trình đặt tên trường khác thì khai ở đây, không phải sửa code.</span></div><div style="padding:0 16px 16px">';
+  h += '<div class="inline" style="margin-bottom:12px"><label class="small muted" for="r-proc">Quy trình</label><select id="r-proc" data-rb="rproc" style="width:auto">' + vt.map(x => '<option value="' + x.id + '"' + (x.id === pid ? ' selected' : '') + '>' + esc(x.name) + '</option>').join('') + '</select><button class="btn sm" type="button" data-act="r-goiy">Gợi ý từ form Base</button><span class="small muted">' + Object.keys(ov).length + ' vai trò đổi tên</span></div>';
+  h += '<div class="ck-bang"><table class="tbl"><thead><tr><th>Vai trò</th><th class="hide-s">Tên chuẩn</th><th>Trường của quy trình này</th><th>Trạng thái</th></tr></thead><tbody>';
+  let grp = '';
+  ROLES_UI.forEach(r => {
+    if (r[3] !== grp){ grp = r[3]; h += '<tr><td colspan="4" class="small muted" style="background:var(--surface-2)"><b>' + esc(grp) + '</b></td></tr>'; }
+    const v = ov[r[0]] || '', eff = v || r[1];
+    const st = v ? '<span class="pill warn">Đổi tên</span>' : onForm.has(r[1]) ? '<span class="pill ok">Đúng tên chuẩn</span>' : '<span class="pill">Không có trên form</span>';
+    h += '<tr><td><b>' + esc(r[2]) + '</b><div class="small muted mono">' + r[0] + '</div></td><td class="mono small hide-s">' + r[1] + '</td><td><input type="text" class="mono" data-rb="role" data-k="' + r[0] + '" value="' + esc(v) + '" placeholder="' + esc(r[1]) + '" aria-label="Trường cho ' + esc(r[2]) + '"></td><td>' + st + (v && !onForm.has(eff) ? '<div class="small" style="color:var(--bad)">Base không có trường này</div>' : '') + '</td></tr>';
+  });
+  return h + '</tbody></table></div></div></section>';
+}
+function rulesLuong(){
+  let h = '<section class="card"><div class="card-h"><h2>Giá trị luồng → hành vi</h2><span class="small muted">Dòng đầu của mỗi hành vi là giá trị hệ thống ghi ra (VD đổi luồng trên Base sau khi giữ số)</span></div><div style="padding:0 16px 16px">';
+  h += '<div class="ck-bang"><table class="tbl"><thead><tr><th>Giá trị trên Base</th><th>Hành vi</th><th>Từ đồng nghĩa (phân cách bằng dấu phẩy, giữ dấu)</th><th></th></tr></thead><tbody>';
+  RULES.luong.forEach((r, i) => {
+    h += '<tr><td><input type="text" data-rb="luong" data-i="' + i + '" data-k="gia_tri" value="' + esc(r.gia_tri) + '" aria-label="Giá trị"></td><td><select data-rb="luong" data-i="' + i + '" data-k="hanh_vi" aria-label="Hành vi">' + Object.keys(HV).map(k => '<option value="' + k + '"' + (k === r.hanh_vi ? ' selected' : '') + '>' + HV[k] + '</option>').join('') + '</select></td><td><input type="text" data-rb="luong" data-i="' + i + '" data-k="dong_nghia" value="' + esc(r.dong_nghia) + '" aria-label="Đồng nghĩa"></td><td><button class="btn ghost sm" type="button" data-act="r-luong-rm" data-i="' + i + '" aria-label="Xoá">' + icon('x') + '</button></td></tr>';
+  });
+  h += '</tbody></table></div><div class="inline" style="margin-top:10px"><button class="btn sm" type="button" data-act="r-luong-add">' + icon('plus') + 'Thêm giá trị</button></div>';
+  h += '<div class="fld" style="margin-top:16px"><label for="r-ltest">Thử một giá trị</label><input type="text" id="r-ltest" placeholder="VD: Xin giữ số trước" value="' + esc(state.ltest || '') + '"></div><div id="r-lout" class="small" style="margin-top:6px">' + luongTestHTML() + '</div>';
+  return h + '</div></section>';
+}
+function luongTestHTML(){
+  const v = state.ltest || ''; if (!v) return '<span class="muted">Gõ một giá trị để xem hệ thống hiểu thế nào.</span>';
+  const k = luongKind(v);
+  return k ? 'Hành vi: <b>' + HV[k] + '</b>' : '<span style="color:var(--bad)">Không nhận ra — bước cấp số sẽ coi như luồng thường (lấy số gõ tay, không có thì cấp mới).</span>';
+}
+function rulesSo(){
+  let h = '<section class="card"><div class="card-h"><h2>Quy tắc đánh số</h2><span class="small muted">Dòng * áp cho mọi quy trình; dòng riêng đè lên</span></div><div style="padding:0 16px 16px"><div class="ck-bang"><table class="tbl"><thead><tr><th>Áp cho</th><th>Mẫu số</th><th>Đánh lại từ 1</th><th>Hậu tố khi chèn</th><th>Điền số trống</th><th></th></tr></thead><tbody>';
+  RULES.so.forEach((r, i) => {
+    const sel = (k, opts) => '<select data-rb="so" data-i="' + i + '" data-k="' + k + '" aria-label="' + k + '">' + opts.map(o => '<option value="' + o[0] + '"' + (o[0] === r[k] ? ' selected' : '') + '>' + o[1] + '</option>').join('') + '</select>';
+    h += '<tr><td>' + (r.qt === '*' ? '<b>Mọi quy trình</b>' : sel('qt', P.filter(p => p.e === 'vanthu').map(p => [p.id, p.name]))) + '</td><td><input type="text" class="mono" data-rb="so" data-i="' + i + '" data-k="mau" value="' + esc(r.mau) + '" aria-label="Mẫu số"></td><td>' + sel('chu_ky', [['nam', 'Mỗi năm'], ['thang', 'Mỗi tháng'], ['khong', 'Không bao giờ']]) + '</td><td>' + sel('hau_to', [['A-Z', '79A, 79B'], ['a-z', '79a, 79b'], ['.1', '79.1, 79.2'], ['khong', 'Không chèn (lấy số mới)']]) + '</td><td>' + sel('dien', [['Có', 'Có'], ['Không', 'Không']]) + '</td><td>' + (r.qt === '*' ? '' : '<button class="btn ghost sm" type="button" data-act="r-so-rm" data-i="' + i + '" aria-label="Xoá">' + icon('x') + '</button>') + '</td></tr>';
+  });
+  h += '</tbody></table></div><div class="inline" style="margin-top:10px"><button class="btn sm" type="button" data-act="r-so-add">' + icon('plus') + 'Thêm quy tắc riêng</button></div>';
+  const qt = state.sqt || '*', pol = polFor(qt), date = state.sdate || '05/11/2026', a = allocDemo(SAMPLE_ROWS, date, pol), y = (vnD(date) || new Date()).getFullYear();
+  if (pol.mau.indexOf('{so}') < 0) h += '<div class="note bad" style="margin-top:10px">Mẫu số phải có {so}.</div>';
+  h += '<div class="card" style="margin-top:16px;padding:14px"><h3 style="margin-bottom:8px">Thử cấp số</h3><div class="row2"><div class="fld"><label for="r-sqt">Theo quy tắc của</label><select id="r-sqt" data-rb="sqt"><option value="*">Mọi quy trình</option>' + RULES.so.filter(r => r.qt !== '*').map(r => '<option value="' + r.qt + '"' + (r.qt === qt ? ' selected' : '') + '>' + esc((procById(r.qt) || {}).name || r.qt) + '</option>').join('') + '</select></div><div class="fld"><label for="r-sdate">Ngày ban hành</label><input type="text" id="r-sdate" class="mono" value="' + esc(date) + '"></div></div>';
+  h += '<p class="small muted" style="margin:8px 0">Sổ Kế hoạch đã có: ' + SAMPLE_ROWS.filter(r => /^\d/.test(r.so_hieu) && r.loai_van_thu === 'Kế hoạch').map(r => '<span class="mono">' + esc(r.so_hieu) + '</span> (' + r.ngay_ban_hanh + ')').join(', ') + '</p>';
+  h += '<div id="r-sout">' + (a.so ? '<div class="note ok">Số cấp: <b class="mono">' + esc(fmtSo(a.so, pol, 'KH', 'DU', y)) + '</b> — ' + esc(a.note) + '</div>' : '<div class="note bad">' + esc(a.note) + '</div>') + '</div></div>';
+  return h + '</div></section>';
+}
+function rulesLich(){
+  let h = '<section class="card"><div class="card-h"><h2>Lịch chạy</h2><span class="small muted">Tới giờ, chạy chuỗi chức năng trên mỗi dòng thoả điều kiện. Job đêm cũ giờ là 2 dòng ở đây.</span></div><div class="alerts" style="padding:0 16px 16px;display:flex;flex-direction:column;gap:12px">';
+  RULES.lich.forEach((l, i) => {
+    const err = condErr(l.dieu_kien);
+    h += '<div class="card" style="padding:14px"><div class="inline" style="justify-content:space-between;flex-wrap:wrap;gap:8px"><div><b>' + esc(l.ten) + '</b><div class="small muted">' + esc(l.loai) + ' lúc ' + esc(l.gio) + ' · ' + (l.qt === '*' ? 'mọi bảng văn thư đi' : esc((procById(l.qt) || {}).name || l.qt)) + ' · <span class="mono">' + esc(l.id) + '</span></div></div><label class="inline small" for="lich-on-' + i + '"><span class="sw"><input type="checkbox" id="lich-on-' + i + '" data-rb="lich" data-i="' + i + '" data-k="on"' + (l.on ? ' checked' : '') + '><span></span></span>' + (l.on ? 'Đang bật' : 'Đang tắt') + '</label></div>';
+    h += '<div class="fld" style="margin-top:10px"><label for="lich-dk-' + i + '">Chạy trên dòng khi</label><input type="text" class="mono cond' + (err ? ' bad' : '') + '" id="lich-dk-' + i + '" data-rb="lich" data-i="' + i + '" data-k="dieu_kien" value="' + esc(l.dieu_kien) + '"><div class="small" id="lich-dke-' + i + '" style="margin-top:4px;color:var(--bad)">' + esc(err) + '</div></div>';
+    h += '<div class="small" style="margin:6px 0 10px">' + l.chain.map(c => '<span class="tag">' + esc(c) + '</span>').join(' → ') + (l.sau ? ' → sau cùng: <span class="tag">' + esc(l.sau) + '</span>' : '') + '</div>';
+    h += '<div class="inline"><button class="btn sm" type="button" data-act="lich-thu" data-i="' + i + '">' + icon('play') + 'Chạy thử (không ghi)</button></div></div>';
+  });
+  return h + '</div></section>';
+}
+function lichTry(i){
+  const l = RULES.lich[i], c = condCompile(l.dieu_kien), pol = polFor(l.qt), rows = SAMPLE_ROWS.map(r => Object.assign({}, r));
+  rows.sort((a, b) => (vnD(a.ngay_ban_hanh) || 9e15) - (vnD(b.ngay_ban_hanh) || 9e15));
+  const hit = rows.filter(r => condEval(c, k => r[k]));
+  let body = '<div class="note info" style="margin-bottom:12px">Chạy bóng trên ' + rows.length + ' dòng mẫu: đọc thật, không ghi Base hay sheet. ' + hit.length + ' dòng thoả điều kiện.</div>';
+  if (!hit.length) body += '<div class="empty">Không dòng nào thoả điều kiện.</div>';
+  const done = rows.filter(r => r.so_hieu);
+  hit.forEach(r => {
+    const tr = [];
+    l.chain.forEach(ch => {
+      if (/^cap_so/.test(ch)){ const a = allocDemo(done, r.ngay_ban_hanh, pol); r.so_hieu = fmtSo(a.so, pol, 'KH', 'DU', (vnD(r.ngay_ban_hanh) || new Date()).getFullYear()); done.push(r); tr.push(['ok', 'Cấp số theo ngày', r.so_hieu + ' — ' + a.note]); }
+      else if (/^dat_gia_tri: luong/.test(ch)) tr.push(['ok', 'Đặt luồng', luongValue('chen_so')]);
+      else if (/^dong_bo_truong/.test(ch)) tr.push(['skip', 'Đẩy lên Base', 'Chạy thử: ghi lại lệnh, không gửi (' + ch.split(': ')[1] + ')']);
+      else tr.push(['ok', ch.split(': ')[0], ch.split(': ')[1] || '']);
+    });
+    body += '<h3 style="margin:12px 0 6px">Phiếu <span class="mono">' + r.root_id + '</span> · ' + esc(r.trich_yeu) + '</h3>' + traceHTML(tr);
+  });
+  if (l.sau) body += traceHTML([['ok', 'Sau cùng: ' + l.sau, 'Sắp theo ngày ban hành, đánh lại STT theo sổ']]);
+  openDrawer('Chạy thử lịch', esc(l.ten), body);
+}
+function roleSuggest(pid){
+  const p = procById(pid), fields = CAT[p.g] || [], ov = RULES.vaitro[pid] = RULES.vaitro[pid] || {};
+  const words = s => new Set(String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/gi, 'd').toLowerCase().replace(/[^a-z0-9 ]/g, ' ').split(/\s+/).filter(w => w.length > 1));
+  let n = 0;
+  ROLES_UI.forEach(r => {
+    if (ov[r[0]] || fields.some(f => f[0] === r[1])) return;
+    const want = words(r[2] + ' ' + r[1].replace(/^service_/, '').replace(/_/g, ' '));
+    let best = null, sc = 0;
+    fields.forEach(f => { const have = words(f[1] + ' ' + f[0].replace(/^service_/, '').replace(/_/g, ' ')); const c = [...want].filter(w => have.has(w)).length / Math.max(want.size, 1); if (c > sc){ sc = c; best = f; } });
+    if (best && sc >= 0.5){ ov[r[0]] = best[0]; n++; }
+  });
+  markDirty('rules:vaitro:' + pid);
+  return n;
+}
+
+/* ---- sự kiện riêng của phần linh hoạt ---- */
+document.addEventListener('click', e => {
+  const a = e.target.closest('[data-act]'); if (!a) return;
+  const act = a.dataset.act, p = curProc(), st = curStep();
+  const ch = () => { if (!st.chain || !st.chainCustom) { st.chain = derivedChain(p, st).chain.map(x => Object.assign({}, x)); st.chainCustom = true; } return st.chain; };
+  const touch = () => { markDirty(p.id + ':' + state.si + ':chain'); rerenderEditor(); };
+  switch (act){
+    case 'ch-up': { const c = ch(), i = +a.dataset.i; if (i > 0) [c[i - 1], c[i]] = [c[i], c[i - 1]]; touch(); break; }
+    case 'ch-down': { const c = ch(), i = +a.dataset.i; if (i < c.length - 1) [c[i + 1], c[i]] = [c[i], c[i + 1]]; touch(); break; }
+    case 'ch-tat': { const c = ch(), i = +a.dataset.i; c[i].tat = !c[i].tat; touch(); break; }
+    case 'ch-rm': { const c = ch(); c.splice(+a.dataset.i, 1); touch(); break; }
+    case 'ch-add': { const c = ch(), k = $('#ch-add').value; c.push({loai:k}); touch(); toast('Đã thêm "' + ACT[k][0] + '" vào cuối chuỗi'); break; }
+    case 'ch-reset': st.chainCustom = false; st.chain = null; touch(); break;
+    case 'shadowview': shadowDrawer(p); break;
+    case 'replay': doReplay(+a.dataset.i, a.dataset.all === '1'); break;
+    case 'rtab': state.rtab = a.dataset.v; render(); break;
+    case 'r-goiy': { const pid = state.rproc || P.find(x => x.e === 'vanthu').id; const n = roleSuggest(pid); render(); toast(n ? 'Đã gợi ý ' + n + ' vai trò từ form Base — kiểm lại rồi xuất bản' : 'Không có vai trò nào cần gợi ý thêm'); break; }
+    case 'r-luong-add': RULES.luong.push({gia_tri:'', hanh_vi:'di', dong_nghia:''}); markDirty('rules:luong'); render(); break;
+    case 'r-luong-rm': RULES.luong.splice(+a.dataset.i, 1); markDirty('rules:luong'); render(); break;
+    case 'r-so-add': { const used = new Set(RULES.so.map(r => r.qt)), pr = P.find(x => x.e === 'vanthu' && !used.has(x.id)); if (!pr){ toast('Quy trình văn thư nào cũng đã có quy tắc riêng'); break; } RULES.so.push(Object.assign({}, polFor('*'), {qt:pr.id})); markDirty('rules:so'); render(); break; }
+    case 'r-so-rm': RULES.so.splice(+a.dataset.i, 1); markDirty('rules:so'); render(); break;
+    case 'lich-thu': if (condErr(RULES.lich[+a.dataset.i].dieu_kien)) toast('Sửa điều kiện trước khi chạy thử'); else lichTry(+a.dataset.i); break;
+  }
+});
+document.addEventListener('change', e => {
+  const t = e.target, p = curProc(), st = curStep();
+  if (t.dataset.cb === 'custom'){
+    if (t.checked){ st.chain = derivedChain(p, st).chain.map(x => Object.assign({}, x)); st.chainCustom = true; } else { st.chainCustom = false; st.chain = null; }
+    markDirty(p.id + ':' + state.si + ':chain'); rerenderEditor(); return;
+  }
+  if (t.dataset.cb === 'cond'){ st.chain[+t.dataset.i].dieu_kien = t.value.trim(); markDirty(p.id + ':' + state.si + ':chain'); rerenderEditor(); return; }
+  const rb = t.dataset.rb; if (!rb) return;
+  const v = t.type === 'checkbox' ? t.checked : t.value;
+  if (rb === 'rproc'){ state.rproc = v; render(); return; }
+  if (rb === 'sqt'){ state.sqt = v; render(); return; }
+  if (rb === 'role'){ const pid = state.rproc || P.find(x => x.e === 'vanthu').id; const ov = RULES.vaitro[pid] = RULES.vaitro[pid] || {}; if (v.trim()) ov[t.dataset.k] = v.trim(); else delete ov[t.dataset.k]; markDirty('rules:vaitro:' + pid + ':' + t.dataset.k); render(); return; }
+  if (rb === 'luong' || rb === 'so' || rb === 'lich'){ RULES[rb][+t.dataset.i][t.dataset.k] = v; markDirty('rules:' + rb + ':' + t.dataset.i + ':' + t.dataset.k); render(); }
+});
+document.addEventListener('input', e => {
+  const t = e.target;
+  if (t.id === 'r-ltest'){ state.ltest = t.value; const o = $('#r-lout'); if (o) o.innerHTML = luongTestHTML(); return; }
+  if (t.id === 'r-sdate'){ state.sdate = t.value; return; }
+  if (t.classList.contains('cond')){ const m = condErr(t.value); t.classList.toggle('bad', !!m); const id = t.id && t.id.replace('lich-dk-', 'lich-dke-'); const o = id && $('#' + id); if (o) o.textContent = m; }
+});
+document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.id === 'r-sdate'){ e.preventDefault(); state.sdate = e.target.value; render(); } });
+document.addEventListener('focusout', e => { if (e.target.id === 'r-sdate' && state.sdate !== undefined){ setTimeout(render, 0); } });
 
 const INITIAL = snapshot(), INIT_ISSUES = JSON.stringify(state.issues);
 const restored = loadSaved();
